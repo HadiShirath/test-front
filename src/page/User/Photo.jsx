@@ -39,7 +39,7 @@ export default function Home() {
       navigate(`/login`);
     }
 
-    fetch(`http://localhost:4000/v1/tps/voter/${tps}`, {
+    fetch(`https://api.kamarhitung.id/v1/tps/voter/${tps}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ export default function Home() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -127,7 +127,7 @@ export default function Home() {
                 >
                   <img
                     id="image"
-                    src={`http://localhost:4000/images/${data.photo}`}
+                    src={`https://api.kamarhitung.id/images/${data.photo}`}
                     alt="form-c1"
                     className="w-full h-full object-cover rounded-xl"
                   />

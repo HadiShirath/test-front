@@ -46,7 +46,7 @@ export default function Login() {
         try {
           await axios
             .post(
-              "http://localhost:4000/v1/auth/login",
+              "https://api.kamarhitung.id/v1/auth/login",
               {
                 username: userName,
                 password: password,

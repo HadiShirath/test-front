@@ -80,7 +80,7 @@ export default function Kecamatan() {
       setPagePhoto(true);
     }
 
-    fetch(`http://localhost:4000/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ export default function Kecamatan() {
         })
       );
 
-      fetch("http://localhost:4000/v1/kecamatan", {
+      fetch("https://api.kamarhitung.id/v1/kecamatan", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -79,7 +79,7 @@ export default function Kelurahan() {
       setPagePhoto(true);
     }
 
-    fetch(`http://localhost:4000/v1/kelurahan/voter/${kelurahan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kelurahan/voter/${kelurahan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -113,7 +113,7 @@ export default function Kelurahan() {
         })
       );
 
-      fetch("http://localhost:4000/v1/kecamatan", {
+      fetch("https://api.kamarhitung.id/v1/kecamatan", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -68,7 +68,7 @@ export default function Table() {
       navigate(`/login`);
     }
 
-    fetch(`http://localhost:4000/v1/kecamatan/${kecamatan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kecamatan/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,7 +89,7 @@ export default function Table() {
         })
       );
 
-    fetch(`http://localhost:4000/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ export default function Table() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
