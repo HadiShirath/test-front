@@ -1,4 +1,4 @@
-import Footer from "../../components/footer";
+import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import { MdLocalPrintshop } from "react-icons/md";
 import { useRef, useEffect, useState } from "react";

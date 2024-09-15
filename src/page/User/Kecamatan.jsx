@@ -1,4 +1,4 @@
-import Footer from "../../components/footer";
+import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import { Pie, Bar } from "react-chartjs-2";
 import {
