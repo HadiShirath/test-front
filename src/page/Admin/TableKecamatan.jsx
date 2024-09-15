@@ -68,7 +68,7 @@ export default function TableKecamatan() {
       }, 2000);
     }
 
-    fetch("http://localhost:4000/v1/kecamatan/all", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan/all", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ export default function TableKecamatan() {
         })
       );
 
-    fetch("http://localhost:4000/v1/tps/voter/all", {
+    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -133,7 +133,7 @@ export default function TableKecamatan() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -208,7 +208,7 @@ export default function TableKecamatan() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`http://localhost:4000/v1/user/${userId}`, {
+      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {

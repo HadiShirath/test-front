@@ -69,7 +69,7 @@ export default function TPS() {
       }, 2000);
     }
 
-    fetch("http://localhost:4000/v1/tps/voter/all", {
+    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -108,7 +108,7 @@ export default function TPS() {
         })
       );
 
-    fetch("http://localhost:4000/v1/tps/all", {
+    fetch("https://api.kamarhitung.id/v1/tps/all", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -134,7 +134,7 @@ export default function TPS() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -241,7 +241,7 @@ export default function TPS() {
     } else {
       setValidateUpdateData(false);
 
-      fetch(`http://localhost:4000/v1/tps/voter/${tpsId}`, {
+      fetch(`https://api.kamarhitung.id/v1/tps/voter/${tpsId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -321,7 +321,7 @@ export default function TPS() {
                     >
                       <img
                         id="image"
-                        src={`http://localhost:4000/images/${isOpenModalEdit.photo}`}
+                        src={`https://api.kamarhitung.id/images/${isOpenModalEdit.photo}`}
                         alt="form-c1"
                         className="w-full h-full object-cover rounded-xl"
                       />

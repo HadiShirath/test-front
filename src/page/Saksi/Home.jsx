@@ -60,7 +60,7 @@ export default function Saksi() {
   //   }
 
   //   if (!tokenUserTPS && token) {
-  //     fetch("http://localhost:4000/v1/tps", {
+  //     fetch("https://api.kamarhitung.id/v1/tps", {
   //       method: "GET",
   //       headers: {
   //         Authorization: `Bearer ${token}`,
@@ -125,7 +125,7 @@ export default function Saksi() {
     setLoadingImage(true);
 
     if (!tokenUserTPS && token) {
-      fetch("http://localhost:4000/v1/tps", {
+      fetch("https://api.kamarhitung.id/v1/tps", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -226,7 +226,7 @@ export default function Saksi() {
       formData.append("photo", file);
 
       // Mengirim file ke server
-      fetch("http://localhost:4000/v1/tps/photo", {
+      fetch("https://api.kamarhitung.id/v1/tps/photo", {
         method: "POST",
         body: formData,
         headers: {
@@ -455,11 +455,11 @@ export default function Saksi() {
                   <img
                     id="image"
                     // src={URL.createObjectURL(image)}
-                    // src={`http://localhost:4000/images/${dataTPS.photo}`}
+                    // src={`https://api.kamarhitung.id/images/${dataTPS.photo}`}
                     src={
                       image
-                        ? `http://localhost:4000/images/${image}`
-                        : `http://localhost:4000/images/${dataTPS.photo}`
+                        ? `https://api.kamarhitung.id/images/${image}`
+                        : `https://api.kamarhitung.id/images/${dataTPS.photo}`
                     }
                     alt="form-c1"
                     className="w-full h-full object-cover rounded-2xl"

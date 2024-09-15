@@ -69,7 +69,7 @@ export default function TableKelurahan() {
       }, 2000);
     }
 
-    fetch(`http://localhost:4000/v1/kecamatan/${kecamatan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kecamatan/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -96,7 +96,7 @@ export default function TableKelurahan() {
         })
       );
 
-    fetch(`http://localhost:4000/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -134,7 +134,7 @@ export default function TableKelurahan() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -210,7 +210,7 @@ export default function TableKelurahan() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`http://localhost:4000/v1/user/${userId}`, {
+      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
