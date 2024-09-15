@@ -1,0 +1,535 @@
+import { useState, useEffect, useRef } from "react";
+import Swal from "sweetalert2";
+import { TiTick } from "react-icons/ti";
+import { MdEdit } from "react-icons/md";
+import { FiUpload } from "react-icons/fi";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import RunningText from "../../components/RunningText";
+import ModalPhoto from "../../components/atoms/ModalPhoto";
+import { clearAllCookies } from "../../utils/cookies";
+import { parseToken } from "../../utils/parseToken";
+import Footer from "../../components/Footer";
+import Dropdown, { DropdownItem } from "../../components/atoms/Dropdown";
+import { FiLogOut } from "react-icons/fi";
+import CircularProgress from "@mui/material/CircularProgress";
+
+export default function Saksi() {
+  const inputRef = useRef();
+  const inputReff = useRef();
+  const [image, setImage] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [dataTPS, setDataTPS] = useState("");
+  const [loadingImage, setLoadingImage] = useState(false);
+
+  const token = Cookies.get("access_token");
+  // const dataTPS = tokenUserTPS ? parseToken(tokenUserTPS) : null;
+
+  // useEffect(() => {
+  //   const token = Cookies.get("access_token");
+  //   const tokenUserTPS = Cookies.get("user");
+
+  //   if (token) {
+  //     const token = Cookies.get("access_token");
+  //     const data = parseToken(token);
+
+  //     // if(tokenUserTPS){
+
+  //     //   const dataTPS = parseToken(tokenUserTPS);
+  //     //   setDataTPS(dataTPS)
+  //     // }
+
+  //     if (data.role !== "saksi") {
+  //       clearAllCookies();
+  //       navigate("/login");
+  //     }
+  //   } else {
+  //     Swal.fire({
+  //       title: "Waktu Habis",
+  //       text: "Sesi Anda Berakhir",
+  //       icon: "error",
+  //       showConfirmButton: false,
+  //       timer: 2000,
+  //     });
+
+  //     setTimeout(() => {
+  //       clearAllCookies();
+  //       navigate("/login");
+  //     }, 2000);
+  //   }
+
+  //   if (!tokenUserTPS && token) {
+  //     fetch("http://localhost:4000/v1/tps", {
+  //       method: "GET",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       credentials: "include",
+  //     })
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         const dataTPS = parseToken(data.payload);
+  //         setDataTPS(dataTPS)
+  //         if (dataTPS.photo != "") {
+  //           setImage(dataTPS.photo);
+  //         }
+  //       })
+  //       .catch((error) =>
+  //         Swal.fire({
+  //           title: "Terjadi Kesalahan",
+  //           text: error,
+  //           icon: "error",
+  //           showConfirmButton: false,
+  //           timer: 2000,
+  //         })
+  //       );
+  //   }
+  //   // else if (tokenUserTPS) {
+  //   //   // Jika `tokenUserTPS` ada, parse dan set dataTPS
+  //   //   const dataTPS = parseToken(tokenUserTPS);
+  //   //   setDataTPS(dataTPS);
+  //   // }
+  // }, [token, navigate, dataTPS]);
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+
+    if (token) {
+      const data = parseToken(token);
+
+      if (data.role !== "saksi") {
+        clearAllCookies();
+        navigate("/login");
+      }
+    } else {
+      Swal.fire({
+        title: "Waktu Habis",
+        text: "Sesi Anda Berakhir",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+
+      setTimeout(() => {
+        clearAllCookies();
+        navigate("/login");
+      }, 2000);
+    }
+  }, [navigate]); // Hanya bergantung pada navigate
+
+  useEffect(() => {
+    const token = Cookies.get("access_token");
+    const tokenUserTPS = Cookies.get("user");
+
+    setLoadingImage(true);
+
+    if (!tokenUserTPS && token) {
+      fetch("http://localhost:4000/v1/tps", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const dataTPS = parseToken(data.payload);
+          setDataTPS(dataTPS);
+          if (dataTPS.photo !== "") {
+            setImage(dataTPS.photo);
+          }
+
+          setLoadingImage(false);
+        })
+        .catch((error) => {
+          Swal.fire({
+            title: "Terjadi Kesalahan",
+            text: error,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+
+          setLoadingImage(false);
+        });
+    } else if (tokenUserTPS) {
+      const dataTPS = parseToken(tokenUserTPS);
+      setDataTPS(dataTPS);
+
+      setLoadingImage(false);
+    }
+  }, []);
+
+  const handleImageClick = () => {
+    inputRef.current.click();
+  };
+
+  const handleDetailPhoto = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Keluar Akun",
+      text: "Apakah anda yakin?",
+      // icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      confirmButtonColor: "#ef4444",
+      focusConfirm: false,
+      cancelButtonText: "Batal",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Cookies.remove("access_token");
+        Cookies.remove("user");
+        navigate("/login");
+      }
+    });
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault(); // Mencegah pengiriman formulir default
+
+    const formData = new FormData();
+    var file = event.target.files[0];
+
+    // Cek ekstensi file
+    if (
+      file.type != "image/jpeg" &&
+      file.type != "image/png" &&
+      file.type != "image/png"
+    ) {
+      return Swal.fire({
+        title: "Upload File Gagal",
+        text: "Harap memilih file JPG/PNG",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+
+    // Ukuran file max 5 MB
+    const MAX_DATA_SIZE = 5 * 1024 * 1024; // 10 MB
+    if (file.size > MAX_DATA_SIZE) {
+      return Swal.fire({
+        title: "File Terlalu Besar",
+        text: "File maksimal 5 MB",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+
+    if (file) {
+      formData.append("photo", file);
+
+      // Mengirim file ke server
+      fetch("http://localhost:4000/v1/tps/photo", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${token}`, // Ganti dengan token JWT Anda
+        },
+        credentials: "include",
+      })
+        .then((response) => {
+
+          if (response.status === 401) {
+           
+            throw new Error("Unauthorized");
+            
+          } else if (response.status === 404) {
+            // Tangani status 401 Unauthorized
+            Swal.fire({
+              title: "Upload Foto Gagal",
+              text: "File photo tidak ditemukan",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          } else if (response.status === 400) {
+            // Tangani status 400
+            Swal.fire({
+              title: "Upload Foto Gagal",
+              text: "Harap pilih foto JPG/PNG",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+
+          // Cek status lainnya
+          if (!response.ok) {
+            throw new Error("Upload Foto Error");
+          }
+
+          return response.json();
+        })
+        .then((data) => {
+          if (data.success) {
+            // File is selected, update the image state
+            Swal.fire({
+              title: "Berhasil",
+              text: "Foto berhasil diunggah",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+
+            Cookies.remove("user");
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            Swal.fire({
+              title: "Upload Foto Gagal",
+              text: data.message,
+              icon: "error",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        })
+        .catch((error) => {
+          if (error.message === "Failed to fetch") {
+            Swal.fire({
+              title: "Upload Foto Gagal",
+              text: "Jenis File Harus JPG/PNG dan ukuran maksimal 5 MB",
+              icon: "error",
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          }
+        });
+    }
+  };
+
+  const handleValidationChangePhoto = () => {
+    Swal.fire({
+      title: "Ganti Foto Form C1",
+      text: "Apakah Kamu Yakin?",
+      // icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yakin",
+      confirmButtonColor: "#008FFB",
+      focusConfirm: false,
+      cancelButtonText: "Batal",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Pilih
+        inputReff.current.click();
+      }
+    });
+  };
+
+  return (
+    <>
+      {isModalOpen && (
+        <ModalPhoto
+          photo={dataTPS ? dataTPS.photo : ""}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
+      <div className="flex flex-col w-full h-full justify-between">
+        <div>
+          <div className="flex flex-row w-full justify-between px-6 xl:px-12 py-8">
+            <div className="hidden xl:flex flex-col justify-center ">
+              <div className="flex flex-row items-center">
+                <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
+                  {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+                </div>
+                <div className="flex flex-col pl-2">
+                  <h1 className="text-3xl font-bold text-red-400">Kamar</h1>
+                  <h1 className="text-3xl font-bold font-sans text-red-400">
+                    Hitung.id
+                  </h1>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="absolute right-5">
+                <Dropdown
+                  trigger={
+                    <div className="flex flex-row">
+                      <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
+                        <img
+                          src="/images/profile.jpg"
+                          alt="profile"
+                          className="rounded-full"
+                        />
+                      </div>
+                    </div>
+                  }
+                >
+                  <DropdownItem onClick={handleLogout}>
+                    <FiLogOut size={20} className="text-red-600" />
+                    <h1 className="text-red-600">Keluar</h1>
+                  </DropdownItem>
+                </Dropdown>
+              </div>
+
+              <div className="xl:hidden flex flex-row items-center pb-3">
+                <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
+                  {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+                </div>
+                <div className="flex flex-col pl-2">
+                  <h1 className="text-xl font-bold text-red-400">
+                    Kamar Hitung.id
+                  </h1>
+                </div>
+              </div>
+
+              <h1 className="text-2xl xl:text-3xl font-semibold">
+                Input Foto Form C1
+              </h1>
+              <h1 className="text-2xl xl:text-3xl">
+                Pemilihan Bupati & Wakil Bupati
+              </h1>
+              <h1 className="text-2xl xl:text-3xl text-semibold ">
+                Kabupaten Aceh Besar
+              </h1>
+            </div>
+
+            <div className="flex flex-col items-end justify-center">
+              <Dropdown
+                trigger={
+                  <div className="hidden xl:flex flex-row">
+                    <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
+                      <img
+                        src="/images/profile.jpg"
+                        alt="profile"
+                        className="rounded-full"
+                      />
+                    </div>
+                    <div className="flex flex-col pl-2">
+                      <h1 className="text-xl">
+                        {dataTPS ? dataTPS.fullname : ""}
+                      </h1>
+                      <h1 className="text-md text-gray-600">Saksi</h1>
+                    </div>
+                  </div>
+                }
+              >
+                <DropdownItem onClick={handleLogout}>
+                  <FiLogOut size={20} className="text-red-600" />
+                  <h1 className="text-red-600">Keluar</h1>
+                </DropdownItem>
+              </Dropdown>
+            </div>
+          </div>
+
+          <div className="flex flex-col w-full bg-gray-100 px-12">
+            <h1 className="text-2xl xl:text-3xl font-semibold text-center pt-8">
+              Kecamatan{" "}
+              <span className="font-bold">
+                {dataTPS ? dataTPS.kecamatan : ""}
+              </span>{" "}
+              Kelurahan{" "}
+              <span className="font-bold">
+                {dataTPS ? dataTPS.kelurahan : ""}
+              </span>
+            </h1>
+            <h1 className="text-2xl xl:text-3xl font-semibold text-center pb-8">
+              <span className="font-bold">{dataTPS ? dataTPS.tps : ""}</span>
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex flex-col w-full items-center py-8 px-8">
+          <div className="py-5">
+            {loadingImage ? ( <div className="flex flex-col items-center"> <CircularProgress size={30} /> <h1 className="pt-4">Loading</h1></div> ) : dataTPS && image ? (
+              <div>
+                <div
+                  className="w-[300px] h-[400px] xl:w-[400px] xl:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
+                  onClick={handleDetailPhoto}
+                >
+                  <div className="bg-green-500 w-[55px] h-[55px] flex items-center justify-center border-[3px] border-white  rounded-full absolute -right-4 -bottom-2">
+                    <TiTick className="text-white text" size={40} />
+                  </div>
+                  <img
+                    id="image"
+                    // src={URL.createObjectURL(image)}
+                    // src={`http://localhost:4000/images/${dataTPS.photo}`}
+                    src={
+                      image
+                        ? `http://localhost:4000/images/${image}`
+                        : `http://localhost:4000/images/${dataTPS.photo}`
+                    }
+                    alt="form-c1"
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
+                </div>
+
+                <form id="uploadForm" encType="multipart/form-data">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={inputReff}
+                    onChange={handleFormSubmit}
+                    style={{ display: "none" }}
+                  />
+                  <div
+                    onClick={handleValidationChangePhoto}
+                    className="flex flex-row bg-primary w-full px-12 xl:px-24 mt-6 py-4 items-center justify-center rounded-xl cursor-pointer"
+                  >
+                    <MdEdit size={24} className="text-white mr-2" />
+                    <h1 className="text-white text-xl font-semibold text-center">
+                      Ganti Foto
+                    </h1>
+                  </div>
+                </form>
+              </div>
+            ) : (
+              <div className="flex flex-col w-full items-center">
+                {/* <TbPhotoFilled size={80} className="text-gray-300" /> */}
+                <img
+                  src="/images/Not-found.jpg"
+                  alt=""
+                  className="w-full h-auto sm:w-[450px] sm:h-[450px]"
+                />
+                <h1 className="text-2xl xl:text-3xl font-semibold text-orange-500 pt-8">
+                  TPS ini Belum Ada Foto
+                </h1>
+                <h1 className="text-xl xl:text-2xl text-gray-500 text-center">
+                  Silahkan unggah foto Form C1 anda
+                </h1>
+                <h1 className="text-md xl:text-xl text-gray-500 pb-6">
+                  Format JPG / PNG
+                </h1>
+
+                <form id="uploadForm" encType="multipart/form-data">
+                  <input
+                    type="file"
+                    ref={inputRef}
+                    onChange={handleFormSubmit}
+                    style={{ display: "none" }}
+                  />
+                  <div
+                    onClick={handleImageClick}
+                    className="flex flex-row bg-primary px-12 xl:px-24 py-4 items-center justify-center rounded-xl cursor-pointer"
+                  >
+                    <FiUpload size={24} className="text-white mr-3" />
+                    <h1 className="text-white text-xl font-semibold text-center">
+                      Unggah Foto
+                    </h1>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <RunningText />
+          <Footer />
+        </div>
+      </div>
+    </>
+  );
+}
