@@ -78,7 +78,7 @@ export default function TPS() {
       setPagePhoto(true);
     }
 
-    fetch(`http://localhost:4000/v1/tps/voter/${tps}`, {
+    fetch(`https://api.kamarhitung.id/v1/tps/voter/${tps}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -112,7 +112,7 @@ export default function TPS() {
         })
       );
 
-    fetch("http://localhost:4000/v1/kecamatan", {
+    fetch("https://api.kamarhitung.id/v1/kecamatan", {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
