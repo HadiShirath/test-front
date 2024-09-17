@@ -27,6 +27,8 @@ import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import CandidateVotes from "../../components/CandidateVotes";
 import { calculatePercentages } from "../../utils/countPercentage";
+import { clearAllCookies } from '../../utils/cookies';
+import { AlertError } from '../../utils/customAlert';
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -45,12 +47,13 @@ export default function TPS() {
   const [data, setData] = useState("");
   const [dataVoter, setDataVoter] = useState("");
   const [userDetail, setUserDetail] = useState("");
-  const [pagePhoto, setPagePhoto] = useState(false);
   const [percentage, setPercentage] = useState([]);
   const [allVotes, setAllVotes] = useState("");
 
   const location = useLocation();
-  const currentPath = location.pathname;
+  const currentURL = location.pathname;
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // Lakukan pengecekan atau logika berdasarkan parameter URL dan path
 
@@ -71,14 +74,15 @@ export default function TPS() {
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+
+      setTimeout(() => {
+        clearAllCookies(); 
+        navigate("/login");
+      }, 2000);
     }
 
-    if (currentPath.startsWith(`/${kecamatan}/${kelurahan}/${tps}/photo`)) {
-      setPagePhoto(true);
-    }
-
-    fetch(`https://api.kamarhitung.id/v1/tps/voter/${tps}`, {
+    fetch(`${apiUrl}/tps/voter/${tps}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -112,26 +116,41 @@ export default function TPS() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
+      .catch((error) => {
+
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
         })
+
+        if(error.message === "Sesi Anda Berakhir"){
+          clearAllCookies()
+          navigate("/login")
+        }
+      }
+
       );
-  }, [navigate, kecamatan, kelurahan, tps, currentPath]);
+
+  }, [navigate, kecamatan, kelurahan, tps, currentURL, apiUrl]);
 
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
@@ -166,14 +185,11 @@ export default function TPS() {
     ],
   };
 
-  const handleToPageTable = (event) => {
-    event.preventDefault();
-    navigate(`/table${currentPath}`);
-  };
+
 
   const handleToPagePhoto = (event) => {
     event.preventDefault();
-    navigate(`/${kecamatan}/${kelurahan}/${tps}/photo`);
+    navigate(`${currentURL}/photo`);
   };
 
   // Opsi chart
@@ -252,11 +268,14 @@ export default function TPS() {
 
         <div>
           <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
+          
+          <div className="md:px-6">
           <Breadcrumbs
             valueKecamatan={data.kecamatan_name}
             valueKelurahan={data.kelurahan_name}
             valueTps={data.tps_name}
           />
+          </div>
 
           <div className="flex flex-row w-full justify-between px-6 md:px-12">
             <div>
@@ -324,12 +343,6 @@ export default function TPS() {
         </div>
 
         <div className="hidden md:flex flex-row w-full items-center justify-center pt-8 gap-2 px-4">
-          <div
-            className="bg-primary py-4 px-8 rounded-xl cursor-pointer"
-            onClick={handleToPageTable}
-          >
-            <h1 className="text-white text-lg">Tampilkan Tabel Suara</h1>
-          </div>
           {/* <div
               className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
               onClick={handlePrint}
@@ -348,16 +361,8 @@ export default function TPS() {
         </div>
       </div>
 
-      <div className="md:hidden flex flex-col w-full">
-        <div className="flex-row mt-4  px-16 items-center">
-          <a href="/table">
-            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
-              <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
-            </div>
-          </a>
-        </div>
-
-        <div className="flex flex-row mt-2  px-16 items-center">
+      <div className="md:hidden flex flex-col w-full pt-4">
+        <div className="flex flex-row mt-2 px-8 items-center">
           <div
             className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2 cursor-pointer"
             onClick={handleToPagePhoto}

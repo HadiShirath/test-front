@@ -3,19 +3,22 @@ import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FormControl, TextField, MenuItem, InputLabel } from "@mui/material";
 import { kelurahanOptions, tpsOptions } from "../data/data";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { kecamatanOptions } from "../data/data";
 import { FiX } from "react-icons/fi";
 import Swal from "sweetalert2";
 
-export default function Search({ kecamatan, kelurahan, tps }) {
+export default function Search({ kecamatan, kelurahan, tps, admin }) {
   const [searchBox, setSearchBox] = useState(false);
   const [valueKecamatan, setValueKecamatan] = useState("");
   const [valueKelurahan, setValueKelurahan] = useState("");
   const [loading, setLoading] = useState(false);
   const [valueTPS, setValueTPS] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const currentURL = location.pathname;
 
   useEffect(() => {
     if (tps) {
@@ -105,12 +108,15 @@ export default function Search({ kecamatan, kelurahan, tps }) {
     } else {
       setTimeout(() => {
         // navigasi kehalaman dengan parameter berikut
+ 
+        const base = admin ? "/admin/dashboard" : "/user" 
+
         if (valueTPS) {
-          navigate(`/${valueKecamatan}/${valueKelurahan}/${valueTPS}`);
+          navigate(`${base}/${valueKecamatan}/${valueKelurahan}/${valueTPS}`)
         } else if (valueKelurahan) {
-          navigate(`/${valueKecamatan}/${valueKelurahan}`);
+          navigate(`${base}/${valueKecamatan}/${valueKelurahan}`)
         } else {
-          navigate(`/${valueKecamatan}`);
+          navigate(`${base}/${valueKecamatan}`)
         }
 
         window.location.reload();
@@ -135,7 +141,7 @@ export default function Search({ kecamatan, kelurahan, tps }) {
   };
 
   return (
-    <div className="flex flex-col w-full pb-6 pt-4 md:px-4 bg-gray-100 my-8">
+    <div className="flex flex-col w-full pb-6 pt-4 md:px-4 bg-gray-100 mb-8">
       <div className="hidden md:flex flex-wrap items-end justify-between px-8">
         <span className="flex flex-col w-full md:w-[30%] md:pr-4">
           <p className="font-semibold text-lg text-black py-2">Kecamatan</p>

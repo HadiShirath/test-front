@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import { Pie, Bar } from "react-chartjs-2";
@@ -29,6 +30,11 @@ import StickyHeadTable from '../../components/StickyHeadTable';
 import CandidateVotes from '../../components/CandidateVotes';
 import { calculatePercentages } from '../../utils/countPercentage';
 import PercentageVote from '../../components/PercentageVote';
+import { AlertError } from '../../utils/customAlert';
+import { clearAllCookies } from '../../utils/cookies';
+
+
+
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -54,6 +60,8 @@ export default function Kecamatan() {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   // Lakukan pengecekan atau logika berdasarkan parameter URL dan path
 
   useEffect(() => {
@@ -73,14 +81,19 @@ export default function Kecamatan() {
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
+
+      setTimeout(() => {
+        clearAllCookies();
+        navigate("/login");
+      }, 2000);
     }
 
     if (currentPath.startsWith(`/${kecamatan}/${kelurahan}/${tps}/photo`)) {
       setPagePhoto(true);
     }
 
-    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`${apiUrl}/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -114,28 +127,43 @@ export default function Kecamatan() {
         })
       );
 
-      fetch("https://api.kamarhitung.id/v1/kecamatan", {
+      fetch(`${apiUrl}/kecamatan`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-        .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+  
+        return response.json();
+      })
         .then((data) => {
           setAllVotes(data.payload);
         })
-        .catch((error) =>
-          Swal.fire({
-            title: "Terjadi Kesalahan",
-            text: error,
-            icon: "error",
-            showConfirmButton: false,
-            timer: 2000,
+        .catch((error) => {
+
+          AlertError({
+            title:
+              error.message === "Sesi Anda Berakhir"
+                ? "Waktu Habis"
+                : "Terjadi Kesalahan",
+            text: error.message,
           })
+
+          if(error.message === "Sesi Anda Berakhir"){
+            clearAllCookies()
+            navigate("/login")
+          }
+        }
+
         );
-  }, [navigate, kecamatan, kelurahan, tps, currentPath]);
+  }, [navigate, kecamatan, kelurahan, tps, currentPath, apiUrl]);
 
   const componentRef = useRef();
+
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
@@ -170,7 +198,9 @@ export default function Kecamatan() {
 
   const handleToPageTable = (event) => {
     event.preventDefault();
-    navigate(`/table${currentPath}`);
+   
+    const urlNew = currentPath.replace('/user', '/user/table');
+    navigate(`${urlNew}`);
   };
 
   const handleToPagePhoto = (event) => {
@@ -254,10 +284,13 @@ export default function Kecamatan() {
 
         <div>
           <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
+
+          <div className="md:px-6">
           <Breadcrumbs
             valueKecamatan={data.kecamatan_name}
             valueKelurahan={data.kelurahan_name}
           />
+          </div>
 
           <div className="flex flex-row w-full justify-between px-6 md:px-12">
             <div>
@@ -336,11 +369,11 @@ export default function Kecamatan() {
 
       <div className="md:hidden flex flex-col w-full">
         <div className="flex-row mt-4  px-16 items-center">
-          <a href="/table">
-            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
+
+            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2" onClick={handleToPageTable}>
               <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
             </div>
-          </a>
+
         </div>
 
         {/* <div className="flex flex-row mt-2  px-16 items-center">

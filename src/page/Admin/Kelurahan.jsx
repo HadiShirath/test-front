@@ -26,7 +26,6 @@ import HeaderAdmin from "../../components/HeaderAdmin";
 import { clearAllCookies } from "../../utils/cookies";
 import { AlertError } from "../../utils/customAlert";
 import PercentageVote from '../../components/PercentageVote';
-import { IoDocumentText } from "react-icons/io5";
 
 
 // Register komponen Chart.js yang diperlukan
@@ -52,10 +51,6 @@ export default function Beranda() {
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  const handleToPagePhoto = (event) => {
-    event.preventDefault();
-    navigate(`/admin/dashboard/${kecamatan}/${kelurahan}/${tps}/photo`);
-  };
 
   const chartData = {
     labels: ["Paslon1", "Paslon2", "Paslon3", "Paslon4", "Suara Tidak Sah"],
@@ -112,7 +107,7 @@ export default function Beranda() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/tps/voter/${tps}`, {
+    fetch(`${apiUrl}/kelurahan/voter/${kelurahan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -136,6 +131,8 @@ export default function Beranda() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
+      
+
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -267,7 +264,6 @@ export default function Beranda() {
           <Breadcrumbs
             valueKecamatan={data.kecamatan_name}
             valueKelurahan={data.kelurahan_name}
-            valueTps={data.tps_name}
             admin
           />
 
@@ -290,9 +286,9 @@ export default function Beranda() {
               </h1>
 
               <div className="xl:hidden flex flex-col w-full pt-4">
-            <div className="bg-slate-100 w-full flex flex-col items-center px-2 py-4 rounded-xl"> 
+          <div className="bg-slate-100 w-full flex flex-col items-center px-2 py-4 rounded-xl"> 
             <PercentageVote allVotes={allVotes} />
-            </div>
+          </div>
         </div>
           </div>
           <div className="flex flex-row w-full pt-12 px-12 h-[500px]">
@@ -318,20 +314,6 @@ export default function Beranda() {
           </div>
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
-
-        <div className="flex flex-row mt-2 w-full justify-center px-8 pt-4 items-center">
-          <div className="flex flex-row w-full xl:w-auto">
-
-          <div
-            className="border-[2px] border-primary py-3 px-12 flex flex-row w-full justify-center rounded-xl gap-2 cursor-pointer"
-            onClick={handleToPagePhoto}
-          >
-            <IoDocumentText size={24} className="text-primary" />
-            <h1 className="text-primary text-lg">Foto Form C1</h1>
-          </div>
-          </div>
-
-        </div>
 
           <RunningText
             totalSuara={allVotes.total_suara}

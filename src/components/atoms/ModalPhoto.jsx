@@ -2,6 +2,9 @@
 import { motion } from "framer-motion";
 
 export default function ModalPhoto({ photo, isModalOpen, setIsModalOpen }) {
+
+  const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
+
   return (
     <div className="fixed w-full h-full flex top-0 bottom-0 items-center justify-center z-[70]"
     onClick={() => setIsModalOpen(!isModalOpen)}
@@ -22,8 +25,7 @@ export default function ModalPhoto({ photo, isModalOpen, setIsModalOpen }) {
       >
         <div className="w-full flex items-center justify-center object-contain">
           <img
-            // src={URL.createObjectURL(photo)}
-            src={`http://localhost:4000/images/${photo}`}
+            src={`${apiUrlBase}/images/${photo}`}
             alt=""
             className="w-full xl:w-auto xl:h-[700px]"
           />

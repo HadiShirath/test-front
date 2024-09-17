@@ -10,6 +10,8 @@ import Swal from "sweetalert2";
 import ModalPhoto from "../../components/atoms/ModalPhoto";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
+import { AlertError } from '../../utils/customAlert';
+import { clearAllCookies } from '../../utils/cookies';
 
 export default function Home() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -18,6 +20,10 @@ export default function Home() {
   const [userDetail, setUserDetail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allVotes, setAllVotes] = useState("");
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
+
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -36,10 +42,15 @@ export default function Home() {
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+
+      setTimeout(() => {
+        clearAllCookies(); 
+        navigate("/login");
+      }, 2000);
     }
 
-    fetch(`https://api.kamarhitung.id/v1/tps/voter/${tps}`, {
+    fetch(`${apiUrl}/tps/voter/${tps}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -59,7 +70,7 @@ export default function Home() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -102,7 +113,7 @@ export default function Home() {
         <div ref={componentRef} className="flex flex-col w-full">
           <Header user={userDetail} />
 
-          <div className="flex flex-col pb-5 xl:pt-10">
+          <div className="flex flex-col pb-5">
             <div className="flex flex-col w-full items-center text-center bg-slate-100 py-8 mb-8 px-4">
               <h1 className="text-2xl xl:text-4xl font-semibold">
                 Foto Form C1
@@ -127,7 +138,7 @@ export default function Home() {
                 >
                   <img
                     id="image"
-                    src={`https://api.kamarhitung.id/images/${data.photo}`}
+                    src={`${apiUrlBase}/images/${data.photo}`}
                     alt="form-c1"
                     className="w-full h-full object-cover rounded-xl"
                   />

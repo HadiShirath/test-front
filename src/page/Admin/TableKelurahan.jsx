@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -38,9 +39,11 @@ export default function TableKelurahan() {
   const [userDetail, setUserDetail] = useState("");
   const [listKelurahan, setListKelurahan] = useState("");
   const [valueKecamatan, setValueKecamatan] = useState("");
-  const [allVotes, setAllVotes] = useState("")
+  const [allVotes, setAllVotes] = useState("");
 
   const componentRef = useRef();
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const token = Cookies.get("access_token");
 
@@ -69,7 +72,7 @@ export default function TableKelurahan() {
       }, 2000);
     }
 
-    fetch(`https://api.kamarhitung.id/v1/kecamatan/${kecamatan}`, {
+    fetch(`${apiUrl}/kecamatan/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -96,7 +99,7 @@ export default function TableKelurahan() {
         })
       );
 
-    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`${apiUrl}/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -134,7 +137,7 @@ export default function TableKelurahan() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -159,8 +162,7 @@ export default function TableKelurahan() {
           text: error.message,
         })
       );
-  }, [navigate, kecamatan, kelurahan, tps]);
-
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -210,7 +212,7 @@ export default function TableKelurahan() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
+      fetch(`${apiUrl}/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -360,7 +362,7 @@ export default function TableKelurahan() {
 
       <div
         className={`${
-          expanded ? "pl-72" : "pl-28"
+          expanded ? "xl:pl-72" : "xl:pl-28"
         } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
       >
         <div className="flex flex-col w-full">
@@ -374,30 +376,28 @@ export default function TableKelurahan() {
 
           <div className="flex pr-4"></div>
 
-        <div ref={componentRef}>
+          <div ref={componentRef}>
+            <div className="px-6 pt-8">
+              <h1 className="text-2xl font-semibold text-primary">
+                Data Tabel Informasi Suara
+              </h1>
+              <h1 className="text-2xl xl:text-3xl font-semibold">
+                Kecamatan <span className="font-bold">{valueKecamatan}</span>
+              </h1>
+            </div>
 
-          <div className="px-6 pt-8">
-            <h1 className="text-2xl font-semibold text-primary">
-              Data Tabel Informasi Suara
-            </h1>
-            <h1 className="text-2xl xl:text-3xl font-semibold">
-              Kecamatan <span className="font-bold">{valueKecamatan}</span>
-            </h1>
-          </div>
+            <div className="flex pt-4">
+              <Breadcrumbs valueKecamatan={valueKecamatan} table admin />
+            </div>
 
-          <div className="flex pt-4">
-            <Breadcrumbs valueKecamatan={valueKecamatan} table admin />
+            <div className="flex flex-col w-full px-6 pt-2">
+              <StickyHeadTable
+                data={listKelurahan ? listKelurahan : []}
+                kecamatan={kecamatan}
+                kelurahan
+              />
+            </div>
           </div>
-
-          <div className="flex flex-col w-full px-6 pt-2">
-            <StickyHeadTable
-              data={listKelurahan ? listKelurahan : []}
-              kecamatan={kecamatan}
-              kelurahan
-            />
-          </div>
-          
-        </div>
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
@@ -411,7 +411,10 @@ export default function TableKelurahan() {
             </div>
           </div>
 
-          <RunningText />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

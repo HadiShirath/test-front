@@ -14,6 +14,8 @@ export default function StickyHeadTable({
   kelurahan,
   tps,
   admin,
+  navigateAdmin,
+  disableTableNavigation,
   setIsOpenModalEdit,
   setPaslon1,
   setPaslon2,
@@ -27,17 +29,15 @@ export default function StickyHeadTable({
 
   const currentURL = location.pathname;
 
-  const handleNavigation = (code) => {
-
-    if (tps) {      
-      const result = currentURL.replace('/table', '');
+  const handleNavigation = (code) => {  
+    if(disableTableNavigation){
+      navigate(`${currentURL}`);
+    } else if (tps) {      
+      const result = currentURL.replace('/table', admin || navigateAdmin ? '/dashboard': "");
       navigate(`${result}/${code}/photo`);
-    } else {
+    } else  {
       navigate(`${currentURL}/${code}`);
     } 
-    // else {
-    //   navigate(`/table/${code}`);
-    // }
   };
 
   const tableCellKecamatan = (value, code) => {

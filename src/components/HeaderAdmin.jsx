@@ -36,15 +36,16 @@ export default function HeaderAdmin({
     });
   };
 
+
   return (
-    <div className="flex flex-row w-full justify-between px-6 pr-8 py-6">
-      <div>
+    <div className="flex flex-row w-full justify-between py-6">
+      <div className="flex flex-col w-full px-6">
         <div className="flex flex-row items-center">
           <FaHome size={20} className="text-white" />
           <h1 className="pl-2 text-white">/ {title}</h1>
           <button
             onClick={() => setExpanded((curr) => !curr)}
-            className="p-1.5 z-[10] rounded-lg ml-3 bg-gray-50 hover:bg-gray-100"
+            className="hidden xl:flex p-1.5 z-[10] rounded-lg ml-3 bg-gray-50 hover:bg-gray-100"
           >
             {expanded ? (
               <LuChevronFirst size={20} />
@@ -59,9 +60,11 @@ export default function HeaderAdmin({
           Real Quick Count Pemilihan Bupati & Wakil Bupati
         </h1>
         <h1 className="text-xl text-white ">Kabupaten Aceh Besar</h1>
+
+      
       </div>
 
-      <div className="hidden xl:flex flex-col justify-between items-end">
+      <div className="hidden xl:flex flex-col w-full justify-between items-end pr-6">
         <Dropdown
           trigger={
             <div className="flex flex-col bg-gray-600 rounded-full w-16">
@@ -92,7 +95,6 @@ export default function HeaderAdmin({
         <div className="bg-white p-3 px-4 rounded-xl">
           <PercentageVote allVotes={allVotes} />
         </div>
-
       </div>
     </div>
   );

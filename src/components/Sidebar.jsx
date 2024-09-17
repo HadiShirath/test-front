@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const SidebarContext = createContext();
 
 export default function Sidebar({ setExpanded, expanded }) {
+
   return (
     <div className="z-[50] fixed hidden xl:flex">
       <SidebarContainer expanded={expanded} setExpanded={setExpanded}>

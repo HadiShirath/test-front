@@ -23,6 +23,8 @@ import Footer from "../../components/Footer";
 import { calculatePercentages } from "../../utils/countPercentage";
 import CandidateVotes from "../../components/CandidateVotes";
 import PercentageVote from '../../components/PercentageVote';
+import { clearAllCookies } from '../../utils/cookies';
+import { AlertError } from '../../utils/customAlert';
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -48,6 +50,8 @@ export default function Table() {
   const location = useLocation();
   const currentPath = location.pathname;
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const token = Cookies.get("access_token");
     // Membaca cookie saat aplikasi dimuat
@@ -65,10 +69,15 @@ export default function Table() {
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+
+      setTimeout(() => {
+        clearAllCookies(); 
+        navigate("/login");
+      }, 2000);
     }
 
-    fetch(`https://api.kamarhitung.id/v1/kecamatan/${kecamatan}`, {
+    fetch(`${apiUrl}/kecamatan/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -89,7 +98,7 @@ export default function Table() {
         })
       );
 
-    fetch(`https://api.kamarhitung.id/v1/kecamatan/voter/${kecamatan}`, {
+    fetch(`${apiUrl}/kecamatan/voter/${kecamatan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -121,7 +130,7 @@ export default function Table() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -140,11 +149,13 @@ export default function Table() {
           timer: 2000,
         })
       );
-  }, [navigate, kecamatan]);
+  }, [navigate, kecamatan, apiUrl]);
+
 
   const handleToPageGraphic = (event) => {
     event.preventDefault();
-    const result = currentPath.slice("/table".length);
+
+    const result = currentPath.replace("/table", "");
     navigate(`${result}`);
   };
 
@@ -228,7 +239,7 @@ export default function Table() {
         <div className="flex flex-row w-full justify-between px-6 md:px-12">
           <div>
             <h1 className="text-2xl font-semibold text-primary">
-              Grafik Perolehan Suara
+              Tabel Perolehan Suara
             </h1>
 
             <h1 className="text-2xl xl:text-4xl font-semibold">
@@ -276,11 +287,9 @@ export default function Table() {
 
         <div className="md:hidden flex flex-col w-full">
           <div className="flex-row mt-4  px-16 items-center">
-            <a href="/">
-              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
+              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2" onClick={handleToPageGraphic}>
                 <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
               </div>
-            </a>
           </div>
 
           {/* <div className="flex flex-row mt-2  px-16 items-center">

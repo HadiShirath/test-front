@@ -4,8 +4,10 @@ import Cookies from "js-cookie";
 import Dropdown, { DropdownItem, DropdownProfile } from "./atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import Swal from "sweetalert2";
+import { HiMenuAlt3 } from "react-icons/hi";
 
-export default function Header({ user }) {
+
+export default function Header({ user, open, setOpen}) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -28,8 +30,12 @@ export default function Header({ user }) {
   };
 
   return (
-    <div className="flex flex-col w-full items-center pt-12">
-      <div className="flex flex-row w-full justify-between px-12">
+    <div className="flex flex-col w-full items-center border-b-4 border-primary pt-12 pb-8">
+        
+      <div className="flex flex-row w-full  justify-between px-8 xl:px-12 ">
+
+   
+
         <div className="hidden xl:flex flex-col justify-center w-full">
           <div className="flex flex-row items-center">
             <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
@@ -44,9 +50,9 @@ export default function Header({ user }) {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center text-center items-center w-full">
-          <div className="xl:hidden flex flex-row items-center pb-3">
-            <div className="absolute right-5">
+        <div className="flex flex-col justify-center text-center  items-center w-full">
+          <div className="xl:hidden flex flex-row w-full justify-between pb-3">
+            {/* <div className="absolute right-5">
               <Dropdown
                 trigger={
                   <div className="flex flex-row">
@@ -77,7 +83,9 @@ export default function Header({ user }) {
                   <h1 className="text-red-600">Keluar</h1>
                 </DropdownItem>
               </Dropdown>
-            </div>
+            </div> */}
+
+              <div className="flex flex-row">
 
             <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
               {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
@@ -87,24 +95,39 @@ export default function Header({ user }) {
                 Kamar Hitung.id
               </h1>
             </div>
+            </div>
+
+
+             <div
+          className={`flex md:hidden transition-transform transform`}
+          onClick={() => setOpen(!open)}
+        >
+          <HiMenuAlt3
+            size={30}
+            className={`text-primary transition-all duration-500 ${
+              open ? "rotate-45" : ""
+            }`}
+          />
+        </div>
           </div>
 
-          {/* <h2 className="text-xl md:text-4xl font-semibold">
+          <h2 className="text-xl md:text-4xl font-semibold">
             Real Quick Count Pemilihan
           </h2>
           <h2 className="text-xl md:text-4xl font-semibold">
             Bupati & Wakil Bupati
           </h2>
-          <h2 className="text-xl md:text-3xl ">Kabupaten Aceh Besar</h2> */}
+          <h2 className="text-xl md:text-3xl ">Kabupaten Aceh Besar</h2>
 
-          <h2 className="text-xl md:text-4xl font-semibold">
-          Lorem ipsum dolor sit amet
+          {/* <h2 className="text-xl md:text-4xl font-semibold">
+            Lorem ipsum dolor sit amet
           </h2>
           <h2 className="text-xl md:text-4xl font-semibold">
-          consectetur adipiscing elit
+            consectetur adipiscing elit
           </h2>
-          <h2 className="text-xl md:text-3xl ">sed do eiusmod tempor</h2>
+          <h2 className="text-xl md:text-3xl ">sed do eiusmod tempor</h2> */}
         </div>
+
 
         <div className="hidden xl:flex flex-col w-full items-end justify-center">
           <Dropdown

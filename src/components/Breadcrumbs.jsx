@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { FaHome } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 
 export default function Breadcrumbs({
   valueKecamatan,
@@ -13,6 +13,9 @@ export default function Breadcrumbs({
 }) {
   const { kecamatan, kelurahan, tps } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const currentURL = location.pathname;
 
   // Menentukan status aktif berdasarkan props
   const activeHome = !photo && !valueKecamatan && !kelurahan && !valueTps;
@@ -29,33 +32,52 @@ export default function Breadcrumbs({
       navigate(`/admin/table`);
     }
     else if (table) {
-      navigate(`/table`);
+      navigate(`/user/table`);
     } else {
       navigate(`/user`);
     }
   };
 
   const handleKecamatan = () => {
-    if (admin && table){
+    if(admin && !table){
+      navigate(`/admin/dashboard/${kecamatan}`);
+    }
+    else if (admin && table){
       navigate(`/admin/table/${kecamatan}`);
     }
     else if (table) {
-      navigate(`/table/${kecamatan}`);
+      navigate(`/user/table/${kecamatan}`);
     } else {
-      navigate(`/${kecamatan}`);
+      navigate(`/user/${kecamatan}`);
     }
   };
 
   const handleKelurahan = () => {
-    if (table) {
-      navigate(`/table/${kecamatan}/${kelurahan}`);
+    if(admin && !table){
+      navigate(`/admin/dashboard/${kecamatan}/${kelurahan}`);
+    }
+    else if (admin && table){
+      navigate(`/admin/table/${kecamatan}/${kelurahan}`);
+    }
+    else if (table) {
+      navigate(`/user/table/${kecamatan}/${kelurahan}`);
     } else {
-      navigate(`/${kecamatan}/${kelurahan}`);
+      navigate(`/user/${kecamatan}/${kelurahan}`);
     }
   };
   
   const handleTPS = () => {
-    navigate(`/${kecamatan}/${kelurahan}/${tps}`);
+    if(admin && !table){
+      navigate(`/admin/dashboard/${kecamatan}/${kelurahan}/${tps}`);
+    }
+    else if (admin && table){
+      navigate(`/admin/table/${kecamatan}/${kelurahan}/${tps}`);
+    }
+    else if (table) {
+      navigate(`/user/table/${kecamatan}/${kelurahan}/${tps}`);
+    } else {
+      navigate(`/user/${kecamatan}/${kelurahan}/${tps}`);
+    }
   };
 
   return (

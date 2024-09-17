@@ -96,8 +96,10 @@ export default function TableListSaksi({token, setIsOpenModalSaksi, setNameKoord
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [dataTPS, setDataTPS] = useState([])
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
-    fetch("http://localhost:4000/v1/tps/saksi", {
+    fetch(`${apiUrl}/tps/saksi`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -105,8 +107,7 @@ export default function TableListSaksi({token, setIsOpenModalSaksi, setNameKoord
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log(data.payload);
-        
+
         setDataTPS(data.payload)
       })
       .catch((error) =>
@@ -118,7 +119,7 @@ export default function TableListSaksi({token, setIsOpenModalSaksi, setNameKoord
           timer: 2000,
         })
       );
-  }, [token])
+  }, [token, apiUrl])
 
 
   function createData(

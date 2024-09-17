@@ -23,6 +23,8 @@ import Footer from "../../components/Footer";
 import { calculatePercentages } from "../../utils/countPercentage";
 import CandidateVotes from "../../components/CandidateVotes";
 import PercentageVote from '../../components/PercentageVote';
+import { clearAllCookies } from '../../utils/cookies';
+import { AlertError } from '../../utils/customAlert';
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -43,9 +45,13 @@ export default function Table() {
   const [dataVoter, setDataVoter] = useState({});
   const [percentage, setPercentage] = useState([]);
   const [allVotes, setAllVotes] = useState("");
+  
 
   const location = useLocation();
   const currentPath = location.pathname;
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -64,10 +70,15 @@ export default function Table() {
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+
+      setTimeout(() => {
+        clearAllCookies(); 
+        navigate("/login");
+      }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan/all", {
+    fetch(`${apiUrl}/kecamatan/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -87,7 +98,7 @@ export default function Table() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -119,31 +130,46 @@ export default function Table() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+    .then((response) => {
+      if (response.status === 401) {
+        throw new Error("Sesi Anda Berakhir");
+      }
+
+      return response.json();
+    })
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
+      .catch((error) => {
+
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
         })
+
+        if(error.message === "Sesi Anda Berakhir"){
+          clearAllCookies()
+          navigate("/login")
+        }
+      }
+
       );
-  }, [navigate]);
+  }, [navigate, apiUrl]);
 
   const handleToPageGraphic = (event) => {
     event.preventDefault();
-    const result = currentPath.slice("/table".length);
-    navigate(`/${result}`);
+
+    const result = currentPath.replace("/table", "");
+    navigate(`${result}`);
   };
 
   // Opsi chart
@@ -231,7 +257,7 @@ export default function Table() {
         <div className="flex flex-row w-full justify-between px-6 md:px-12">
           <div>
             <h1 className="text-2xl font-semibold text-primary">
-              Grafik Perolehan Suara
+              Tabel Perolehan Suara
             </h1>
             <h1 className="text-2xl xl:text-4xl font-semibold">
               Kabupaten Aceh Besar
@@ -279,11 +305,11 @@ export default function Table() {
 
         <div className="md:hidden flex flex-col w-full">
           <div className="flex-row mt-4  px-16 items-center">
-            <a href="/">
-              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
+
+              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2" onClick={handleToPageGraphic}>
                 <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
               </div>
-            </a>
+
           </div>
 
           {/* <div className="flex flex-row mt-2  px-16 items-center">

@@ -1,56 +1,34 @@
-import RunningText from "../../components/RunningText";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { MdLocalPrintshop } from "react-icons/md";
-
-import { useParams, useNavigate, useLocation } from "react-router-dom";
-import StickyHeadTable from "../../components/StickyHeadTable";
-import Breadcrumbs from "../../components/Breadcrumbs";
-import Header from "../../components/Header";
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
+import Sidebar from "../../components/Sidebar";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { parseToken } from "../../utils/parseToken";
-import Swal from "sweetalert2";
-import Footer from "../../components/Footer";
+import Cookies from "js-cookie";
 import { calculatePercentages } from "../../utils/countPercentage";
+import Swal from "sweetalert2";
 import CandidateVotes from "../../components/CandidateVotes";
+import Footer from "../../components/Footer";
+import RunningText from "../../components/RunningText";
+import HeaderAdmin from "../../components/HeaderAdmin";
+import { motion } from "framer-motion";
 import { FiX } from "react-icons/fi";
 import CircularProgress from "@mui/material/CircularProgress";
-import { motion } from "framer-motion";
+import StickyHeadTable from "../../components/StickyHeadTable";
 import ModalPhoto from "../../components/atoms/ModalPhoto";
-import { AlertError } from '../../utils/customAlert';
-import { clearAllCookies } from '../../utils/cookies';
+import { AlertError } from "../../utils/customAlert";
+import { clearAllCookies } from "../../utils/cookies";
+import { MdLocalPrintshop } from "react-icons/md";
+import { useReactToPrint } from "react-to-print";
 
-// Register komponen Chart.js yang diperlukan
-ChartJS.register(
-  CategoryScale,
-  ArcElement,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-export default function Table() {
+export default function TPS() {
   const { kecamatan, kelurahan, tps } = useParams();
+  const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
-  const [userDetail, setUserDetail] = useState("");
-  const [listKecamatan, setListKecamatan] = useState([]);
   const [dataVoter, setDataVoter] = useState({});
   const [percentage, setPercentage] = useState([]);
-  const [allVotes, setAllVotes] = useState("");
-  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [validateUpdateData, setValidateUpdateData] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [listDataTPS, setListDataTPS] = useState([]);
+  const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [paslon1, setPaslon1] = useState(0);
   const [paslon2, setPaslon2] = useState(0);
   const [paslon3, setPaslon3] = useState(0);
@@ -58,13 +36,18 @@ export default function Table() {
   const [suaraSah, setSuaraSah] = useState(0);
   const [suaraTidakSah, setSuaraTidakSah] = useState(0);
   const [isModalPhotoOpen, setIsModalPhotoOpen] = useState(false);
+  const [userDetail, setUserDetail] = useState("");
+  const [allVotes, setAllVotes] = useState("");
 
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const componentRef = useRef();
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
 
   const token = Cookies.get("access_token");
 
   useEffect(() => {
+    const token = Cookies.get("access_token");
     // Membaca cookie saat aplikasi dimuat
     if (token) {
       const data = parseToken(token);
@@ -73,6 +56,7 @@ export default function Table() {
         fullname: data.fullname,
         role: data.role,
       };
+
       setUserDetail(user);
 
       if (data.role !== "admin") {
@@ -83,51 +67,24 @@ export default function Table() {
       AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/tps/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response) => {
-      if (response.status === 401) {
-        throw new Error("Sesi Anda Berakhir");
-      }
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
 
-      return response.json();
-    })
-      .then((data) => {
-        setListKecamatan(data.payload);
+        return response.json();
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
-
-
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      if (response.status === 401) {
-        throw new Error("Sesi Anda Berakhir");
-      }
-
-      return response.json();
-    })
       .then((data) => {
         const dataVoter = data.payload;
 
@@ -138,6 +95,7 @@ export default function Table() {
           dataVoter.paslon4,
           dataVoter.suara_tidak_sah,
         ];
+
         const percentages = calculatePercentages(dataset);
 
         setDataVoter(dataset);
@@ -153,19 +111,45 @@ export default function Table() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/tps/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response) => {
-      if (response.status === 401) {
-        throw new Error("Sesi Anda Berakhir");
-      }
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
 
-      return response.json();
+        return response.json();
+      })
+      .then((data) => {
+        setListDataTPS(data.payload);
+      })
+      .catch((error) =>
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
+        })
+      );
+
+    fetch(`${apiUrl}/kecamatan`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setAllVotes(data.payload);
       })
@@ -178,13 +162,11 @@ export default function Table() {
           text: error.message,
         })
       );
-  }, [navigate, token]);
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
-  const handleToPageGraphic = (event) => {
-    event.preventDefault();
-    const result = currentPath.slice("/table".length);
-    navigate(`/${result}`);
-  };
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   const handleCloseModal = () => {
     setValidateUpdateData(false);
@@ -195,21 +177,34 @@ export default function Table() {
     setIsModalPhotoOpen(true);
   };
 
+  const handleValue = (event, setPaslon, setSuaraSah, index) => {
+    var newValue = parseInt(event.target.value, 10);
+    if (isNaN(newValue)) {
+      newValue = 0;
+    }
+    setPaslon(newValue);
+
+    // suara paslon
+    const updatedPaslons = [paslon1, paslon2, paslon3, paslon4];
+    updatedPaslons[index] = newValue;
+
+    // Update suaraSah
+    setSuaraSah(updatedPaslons.reduce((total, value) => total + value, 0));
+  };
+
   const handleChangePaslon1 = (event) => {
-    setPaslon1(parseInt(event.target.value, 10));
+    handleValue(event, setPaslon1, setSuaraSah, 0);
   };
   const handleChangePaslon2 = (event) => {
-    setPaslon2(parseInt(event.target.value, 10));
+    handleValue(event, setPaslon2, setSuaraSah, 1);
   };
   const handleChangePaslon3 = (event) => {
-    setPaslon2(parseInt(event.target.value, 10));
+    handleValue(event, setPaslon3, setSuaraSah, 2);
   };
   const handleChangePaslon4 = (event) => {
-    setPaslon4(parseInt(event.target.value, 10));
+    handleValue(event, setPaslon4, setSuaraSah, 3);
   };
-  const handleChangeSuaraSah = (event) => {
-    setSuaraSah(parseInt(event.target.value, 10));
-  };
+
   const handleChangeSuaraTidakSah = (event) => {
     setSuaraTidakSah(parseInt(event.target.value, 10));
   };
@@ -249,7 +244,7 @@ export default function Table() {
     } else {
       setValidateUpdateData(false);
 
-      fetch(`https://api.kamarhitung.id/v1/tps/voter/${tpsId}`, {
+      fetch(`${apiUrl}/tps/voter/${tpsId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -257,13 +252,7 @@ export default function Table() {
           "Content-Type": "application/json",
         },
       })
-      .then((response) => {
-        if (response.status === 401) {
-          throw new Error("Sesi Anda Berakhir");
-        }
-
-        return response.json();
-      })
+        .then((response) => response.json())
         .then((data) => {
           if (data.success) {
             Swal.fire({
@@ -281,88 +270,16 @@ export default function Table() {
             }, 2000);
           }
         })
-        .catch((error) =>{
-          AlertError({
-            title:
-              error.message === "Sesi Anda Berakhir"
-                ? "Waktu Habis"
-                : "Terjadi Kesalahan",
-            text: error.message,
-          });
-      
-        }
-         
+        .catch((error) =>
+          Swal.fire({
+            title: "Terjadi Kesalahan",
+            text: error,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          })
         );
     }
-  };
-
-  // Opsi chart
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    borderRadius: 12,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        grid: {
-          drawBorder: false,
-          display: true,
-          drawOnChartArea: true,
-          drawTicks: false,
-          borderDash: [5, 5],
-        },
-        border: {
-          display: false, // Menghilangkan garis sumbu Y
-        },
-        ticks: {
-          padding: 10,
-          color: "#9ca2b7",
-          font: {
-            size: 11,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-        beginAtZero: true,
-      },
-      x: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: true,
-          drawTicks: true,
-        },
-        ticks: {
-          // display: true,
-          color: "#9ca2b7",
-          padding: 10,
-          font: {
-            size: 12,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-      },
-    },
-  };
-
-  chartOptions.plugins = {
-    ...chartOptions.plugins,
-    datalabels: {
-      color: "#000",
-      anchor: "end",
-      align: "top",
-      offset: 4,
-      font: {
-        weight: "bold",
-        size: 16,
-      },
-      formatter: (value) => value.toLocaleString(), // Format numbers with commas
-    },
   };
 
   return (
@@ -374,9 +291,9 @@ export default function Table() {
           setIsModalOpen={setIsModalPhotoOpen}
         />
       )}
-      <div className="flex flex-col w-full relative">
+      <div className="flex flex-row h-full w-full relative">
         {isOpenModalEdit && (
-          <div className="fixed w-full h-full flex top-0 bottom-0 items-center justify-center">
+          <div className="fixed w-full h-full flex top-0 bottom-0 items-center justify-center z-[60]">
             <div
               className="w-full h-full bg-black opacity-40"
               onClick={handleCloseModal}
@@ -407,7 +324,7 @@ export default function Table() {
                     >
                       <img
                         id="image"
-                        src={`https://api.kamarhitung.id/images/${isOpenModalEdit.photo}`}
+                        src={`${apiUrlBase}/images/${isOpenModalEdit.photo}`}
                         alt="form-c1"
                         className="w-full h-full object-cover rounded-xl"
                       />
@@ -508,7 +425,7 @@ export default function Table() {
                         className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
                         type="number"
                         value={suaraSah}
-                        onChange={handleChangeSuaraSah}
+                        readOnly
                       />
                     </div>
                     <div>
@@ -545,68 +462,42 @@ export default function Table() {
           </div>
         )}
 
-        <div className="flex flex-col w-full">
-          <Header user={userDetail} />
+        <div className="flex flex-col bg-primary w-full absolute -z-20 h-52" />
 
-          <div className="pt-12">
-            <div className="flex xl:hidden">
-              <Breadcrumbs
-                kecamatan={kecamatan}
-                kelurahan={kelurahan}
-                tps={tps}
-                table
-              />
-            </div>
-            <div className="flex flex-row w-full justify-between px-6 md:px-12">
-              <div>
-                <h1 className="text-2xl font-semibold text-primary">
-                  Grafik Perolehan Suara
-                </h1>
-                <h1 className="text-2xl xl:text-4xl font-semibold">
-                  Kabupaten Aceh Besar
-                </h1>
-              </div>
+        <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
-              <div className="hidden md:flex bg-gray-100 h-full p-4 mt-4 items-center rounded-2xl">
-                <h2 className="text-xl">
-                  Data Masuk :{" "}
-                  <span className="font-bold text-2xl">
-                    {allVotes.persentase}%
-                  </span>{" "}
-                  ({allVotes.total_suara} Suara)
-                </h2>
-              </div>
+        <div
+          className={`${
+            expanded ? "xl:pl-72" : "xl:pl-28"
+          } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
+        >
+          <div className="flex flex-col w-full">
+            <HeaderAdmin
+              expanded={expanded}
+              setExpanded={setExpanded}
+              title="TPS"
+              user={userDetail}
+              allVotes={allVotes}
+            />
+
+            <div className="flex pr-4"></div>
+
+            <div ref={componentRef}>
+            <div className="px-6 pt-8">
+              <h1 className="text-2xl font-semibold text-primary">
+                Data Informasi TPS
+              </h1>
+              <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
             </div>
 
-            <div className="hidden xl:flex pt-4">
-              <Breadcrumbs
-                kecamatan={kecamatan}
-                kelurahan={kelurahan}
-                tps={tps}
-                table
-              />
-            </div>
-
-            <div className="flex md:hidden w-full px-4 my-4">
-              <div className="bg-slate-100 w-full p-4 rounded-2xl">
-                <h2 className="text-xl">
-                  Data Masuk :{" "}
-                  <span className="font-bold text-2xl">
-                    {" "}
-                    {allVotes.persentase}%
-                  </span>
-                  ({allVotes.total_suara} Suara)
-                </h2>
-              </div>
-            </div>
-
-            <div className="flex flex-col w-full px-4 md:px-12">
+            <div className="flex flex-col w-full px-6 pt-6">
               <StickyHeadTable
-                data={listKecamatan}
+                data={listDataTPS}
                 kecamatan
                 kelurahan
                 tps
                 admin
+                disableTableNavigation
                 setIsOpenModalEdit={setIsOpenModalEdit}
                 setPaslon1={setPaslon1}
                 setPaslon2={setPaslon2}
@@ -616,47 +507,26 @@ export default function Table() {
                 setSuaraTidakSah={setSuaraTidakSah}
               />
             </div>
+            </div>
 
             <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
-            <div className="hidden md:flex flex-row w-full justify-center pt-8 gap-2 px-4 ">
+            <div className="flex flex-row mt-2  px-16 items-center">
               <div
-                className="bg-primary py-4 px-8 rounded-xl cursor-pointer "
-                onClick={handleToPageGraphic}
+                className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2"
+                onClick={handlePrint}
               >
-                <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
+                <MdLocalPrintshop size={24} className="text-primary" />
+                <h1 className="text-primary text-lg">Cetak</h1>
               </div>
-              {/* <div className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl">
-          <MdLocalPrintshop size={24} className="text-white" />
-          <h1 className="text-white text-lg">Cetak</h1>
-        </div> */}
             </div>
 
-            <div className="md:hidden flex flex-col w-full">
-              <div className="flex-row mt-4  px-16 items-center">
-                <a href="/">
-                  <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
-                    <h1 className="text-white text-lg">
-                      Tampilkan Bentuk Grafik
-                    </h1>
-                  </div>
-                </a>
-              </div>
-
-              {/* <div className="flex flex-row mt-2  px-16 items-center">
-            <div className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2">
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
-            </div>
-          </div> */}
-            </div>
+            <RunningText
+        totalSuara={allVotes.total_suara}
+        persentase={allVotes.persentase}
+      />
+            <Footer />
           </div>
-
-          <RunningText
-            totalSuara={allVotes.total_suara}
-            persentase={allVotes.persentase}
-          />
-          <Footer />
         </div>
       </div>
     </>

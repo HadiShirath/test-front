@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { TiTick } from "react-icons/ti";
@@ -13,6 +14,8 @@ import Footer from "../../components/Footer";
 import Dropdown, { DropdownItem } from "../../components/atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import CircularProgress from "@mui/material/CircularProgress";
+import { AlertError } from '../../utils/customAlert';
+
 
 export default function Saksi() {
   const inputRef = useRef();
@@ -22,75 +25,12 @@ export default function Saksi() {
   const navigate = useNavigate();
   const [dataTPS, setDataTPS] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
+  const [allVotes, setAllVotes] = useState("")
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
 
   const token = Cookies.get("access_token");
-  // const dataTPS = tokenUserTPS ? parseToken(tokenUserTPS) : null;
-
-  // useEffect(() => {
-  //   const token = Cookies.get("access_token");
-  //   const tokenUserTPS = Cookies.get("user");
-
-  //   if (token) {
-  //     const token = Cookies.get("access_token");
-  //     const data = parseToken(token);
-
-  //     // if(tokenUserTPS){
-
-  //     //   const dataTPS = parseToken(tokenUserTPS);
-  //     //   setDataTPS(dataTPS)
-  //     // }
-
-  //     if (data.role !== "saksi") {
-  //       clearAllCookies();
-  //       navigate("/login");
-  //     }
-  //   } else {
-  //     Swal.fire({
-  //       title: "Waktu Habis",
-  //       text: "Sesi Anda Berakhir",
-  //       icon: "error",
-  //       showConfirmButton: false,
-  //       timer: 2000,
-  //     });
-
-  //     setTimeout(() => {
-  //       clearAllCookies();
-  //       navigate("/login");
-  //     }, 2000);
-  //   }
-
-  //   if (!tokenUserTPS && token) {
-  //     fetch("https://api.kamarhitung.id/v1/tps", {
-  //       method: "GET",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       credentials: "include",
-  //     })
-  //       .then((response) => response.json())
-  //       .then((data) => {
-  //         const dataTPS = parseToken(data.payload);
-  //         setDataTPS(dataTPS)
-  //         if (dataTPS.photo != "") {
-  //           setImage(dataTPS.photo);
-  //         }
-  //       })
-  //       .catch((error) =>
-  //         Swal.fire({
-  //           title: "Terjadi Kesalahan",
-  //           text: error,
-  //           icon: "error",
-  //           showConfirmButton: false,
-  //           timer: 2000,
-  //         })
-  //       );
-  //   }
-  //   // else if (tokenUserTPS) {
-  //   //   // Jika `tokenUserTPS` ada, parse dan set dataTPS
-  //   //   const dataTPS = parseToken(tokenUserTPS);
-  //   //   setDataTPS(dataTPS);
-  //   // }
-  // }, [token, navigate, dataTPS]);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -103,16 +43,10 @@ export default function Saksi() {
         navigate("/login");
       }
     } else {
-      Swal.fire({
-        title: "Waktu Habis",
-        text: "Sesi Anda Berakhir",
-        icon: "error",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" }); 
 
       setTimeout(() => {
-        clearAllCookies();
+        clearAllCookies(); 
         navigate("/login");
       }, 2000);
     }
@@ -125,7 +59,7 @@ export default function Saksi() {
     setLoadingImage(true);
 
     if (!tokenUserTPS && token) {
-      fetch("https://api.kamarhitung.id/v1/tps", {
+      fetch(`${apiUrl}/tps`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -159,7 +93,33 @@ export default function Saksi() {
 
       setLoadingImage(false);
     }
-  }, []);
+
+    fetch(`${apiUrl}/kecamatan`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      if (response.status === 401) {
+        throw new Error("Sesi Anda Berakhir");
+      }
+
+      return response.json();
+    })
+      .then((data) => {
+        setAllVotes(data.payload);
+      })
+      .catch((error) =>
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
+        })
+      );
+  }, [apiUrl]);
 
   const handleImageClick = () => {
     inputRef.current.click();
@@ -226,7 +186,7 @@ export default function Saksi() {
       formData.append("photo", file);
 
       // Mengirim file ke server
-      fetch("https://api.kamarhitung.id/v1/tps/photo", {
+      fetch(`${apiUrl}/tps/photo`, {
         method: "POST",
         body: formData,
         headers: {
@@ -235,11 +195,8 @@ export default function Saksi() {
         credentials: "include",
       })
         .then((response) => {
-
           if (response.status === 401) {
-           
             throw new Error("Unauthorized");
-            
           } else if (response.status === 404) {
             // Tangani status 401 Unauthorized
             Swal.fire({
@@ -337,8 +294,8 @@ export default function Saksi() {
       )}
       <div className="flex flex-col w-full h-full justify-between">
         <div>
-          <div className="flex flex-row w-full justify-between px-6 xl:px-12 py-8">
-            <div className="hidden xl:flex flex-col justify-center ">
+          <div className="flex flex-col w-full border-b-4 border-primary px-6 xl:px-12 py-8">
+            <div className="hidden xl:flex flex-col justify-center absolute">
               <div className="flex flex-row items-center">
                 <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
                   {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
@@ -352,11 +309,11 @@ export default function Saksi() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center text-center w-full">
               <div className="absolute right-5">
                 <Dropdown
                   trigger={
-                    <div className="flex flex-row">
+                    <div className="xl:hidden flex  flex-row">
                       <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
                         <img
                           src="/images/profile.jpg"
@@ -396,7 +353,7 @@ export default function Saksi() {
               </h1>
             </div>
 
-            <div className="flex flex-col items-end justify-center">
+            <div className="flex flex-col items-end justify-center absolute right-0 px-8">
               <Dropdown
                 trigger={
                   <div className="hidden xl:flex flex-row">
@@ -443,7 +400,12 @@ export default function Saksi() {
 
         <div className="flex flex-col w-full items-center py-8 px-8">
           <div className="py-5">
-            {loadingImage ? ( <div className="flex flex-col items-center"> <CircularProgress size={30} /> <h1 className="pt-4">Loading</h1></div> ) : dataTPS && image ? (
+            {loadingImage ? (
+              <div className="flex flex-col items-center">
+                {" "}
+                <CircularProgress size={30} /> <h1 className="pt-4">Loading</h1>
+              </div>
+            ) : dataTPS || image ? (
               <div>
                 <div
                   className="w-[300px] h-[400px] xl:w-[400px] xl:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
@@ -454,12 +416,10 @@ export default function Saksi() {
                   </div>
                   <img
                     id="image"
-                    // src={URL.createObjectURL(image)}
-                    // src={`https://api.kamarhitung.id/images/${dataTPS.photo}`}
                     src={
                       image
-                        ? `https://api.kamarhitung.id/images/${image}`
-                        : `https://api.kamarhitung.id/images/${dataTPS.photo}`
+                        ? `${apiUrlBase}/images/${image}`
+                        : `${apiUrlBase}/images/${dataTPS.photo}`
                     }
                     alt="form-c1"
                     className="w-full h-full object-cover rounded-2xl"
@@ -526,7 +486,10 @@ export default function Saksi() {
         </div>
 
         <div>
-          <RunningText />
+        <RunningText
+        totalSuara={allVotes.total_suara}
+        persentase={allVotes.persentase}
+      />
           <Footer />
         </div>
       </div>

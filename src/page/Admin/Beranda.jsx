@@ -25,6 +25,8 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import { clearAllCookies } from "../../utils/cookies";
 import { AlertError } from "../../utils/customAlert";
+import PercentageVote from '../../components/PercentageVote';
+
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -46,6 +48,8 @@ export default function Beranda() {
   const [percentage, setPercentage] = useState([]);
   const [userDetail, setUserDetail] = useState("");
   const [allVotes, setAllVotes] = useState("");
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const chartData = {
     labels: ["Paslon1", "Paslon2", "Paslon3", "Paslon4", "Suara Tidak Sah"],
@@ -101,7 +105,7 @@ export default function Beranda() {
       }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -142,33 +146,40 @@ export default function Beranda() {
         });
       });
 
-      fetch("https://api.kamarhitung.id/v1/kecamatan", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    fetch(`${apiUrl}/kecamatan`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (response.status === 401) {
           throw new Error("Sesi Anda Berakhir");
         }
-  
+
         return response.json();
       })
-        .then((data) => {
-          setAllVotes(data.payload);
-        })
-        .catch((error) =>
-          AlertError({
-            title:
-              error.message === "Sesi Anda Berakhir"
-                ? "Waktu Habis"
-                : "Terjadi Kesalahan",
-            text: error.message,
-          })
-        );
+      .then((data) => {
+        setAllVotes(data.payload);
+      })
+      .catch((error) => {
 
-  }, [navigate, kecamatan, kelurahan, tps]);
+        AlertError({
+          title:
+          error.message === "Sesi Anda Berakhir"
+          ? "Waktu Habis"
+          : "Terjadi Kesalahan",
+          text: error.message,
+        })
+
+        if (error.message === "Sesi Anda Berakhir"){
+          clearAllCookies()
+          navigate("/login")
+        }
+      }
+        
+      );
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   // Opsi chart
   const chartOptions = {
@@ -247,8 +258,8 @@ export default function Beranda() {
 
       <div
         className={`${
-          expanded ? "pl-72" : "pl-28"
-        } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
+          expanded ? "xl:pl-72" : "xl:pl-28"
+        } flex flex-col transition-all duration-300 py-4 z-[10]  w-full h-screen`}
       >
         <div className="flex flex-col w-full">
           <HeaderAdmin
@@ -259,8 +270,9 @@ export default function Beranda() {
             allVotes={allVotes}
           />
 
-          <div className="flex pr-4">
-            <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
+
+          <div className="flex xl:pr-4 pt-4 xl:pt-6">
+            <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} admin/>
           </div>
           <Breadcrumbs admin />
 
@@ -269,7 +281,16 @@ export default function Beranda() {
               Grafik Perolehan Suara
             </h1>
             <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
+
+            <div className="xl:hidden flex flex-col w-full pt-4">
+          <div className="bg-slate-100 w-full flex flex-col items-center px-2 py-4 rounded-xl"> 
+            <PercentageVote allVotes={allVotes} />
           </div>
+        </div>
+          </div>
+
+
+
           <div className="flex flex-row w-full pt-12 px-12 h-[500px]">
             <div className="flex flex-col w-full lg:w-1/2 h-[90%]">
               <Pie data={chartData} options={pieOptions} />
@@ -294,7 +315,10 @@ export default function Beranda() {
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
-          <RunningText />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

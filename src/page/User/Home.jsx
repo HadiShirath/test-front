@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import { Pie, Bar } from "react-chartjs-2";
@@ -18,19 +19,20 @@ import Search from "../../components/Search";
 import { useRef, useEffect, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import PrintChart from "../../components/PrintChart";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate} from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
 import Swal from "sweetalert2";
-import { IoDocumentText } from "react-icons/io5";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import StickyHeadTable from "../../components/StickyHeadTable";
 import CandidateVotes from "../../components/CandidateVotes";
 import { calculatePercentages } from "../../utils/countPercentage";
 import { clearAllCookies } from '../../utils/cookies';
 import PercentageVote from '../../components/PercentageVote';
 import { AlertError } from '../../utils/customAlert';
+import { motion } from "framer-motion";
+import { slideInFromBottom, sideBar } from '../../utils/motion';
+import { MdClose } from "react-icons/md";
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -51,9 +53,9 @@ export default function Home() {
   const [allVotes, setAllVotes] = useState("");
   const [dataVoter, setDataVoter] = useState({});
   const [percentage, setPercentage] = useState([]);
+  const [open, setOpen] = useState(false);
 
-  const location = useLocation();
-  const currentPath = location.pathname;
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // Lakukan pengecekan atau logika berdasarkan parameter URL dan path
 
@@ -74,13 +76,7 @@ export default function Home() {
         navigate(`/login`);
       }
     } else {
-      Swal.fire({
-        title: "Waktu Habis",
-        text: "Sesi Anda Berakhir",
-        icon: "error",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
         clearAllCookies();
@@ -88,7 +84,7 @@ export default function Home() {
       }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -112,17 +108,17 @@ export default function Home() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      // .catch((error) =>
-      //   Swal.fire({
-      //     title: "Terjadi Kesalahan",
-      //     text: error,
-      //     icon: "error",
-      //     showConfirmButton: false,
-      //     timer: 2000,
-      //   })
-      // );
+      .catch((error) =>
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
+        })
+      );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -147,7 +143,7 @@ export default function Home() {
           text: error.message,
         })
       );
-  }, [navigate, kecamatan, kelurahan, tps]);
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const componentRef = useRef();
 
@@ -185,12 +181,7 @@ export default function Home() {
 
   const handleToPageTable = (event) => {
     event.preventDefault();
-    navigate(`/table`);
-  };
-
-  const handleToPagePhoto = (event) => {
-    event.preventDefault();
-    navigate(`/${kecamatan}/${kelurahan}/${tps}/photo`);
+    navigate(`/user/table`);
   };
 
   // Opsi chart
@@ -264,16 +255,83 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center w-full">
+       {open && (
+        <motion.div
+          initial="offscreen"
+          whileInView="onscreen"
+          className="fixed md:hidden w-full h-full z-[20]"
+        >
+          <div className="w-full h-full" onClick={() => setOpen(!open)} />
+          <motion.div
+            variants={sideBar()}
+            className="absolute pt-16 px-8 w-1/2 h-full shadow-primary shadow-xl right-0 top-0 bg-[#ffffff] backdrop-blur-xl"
+          >
+            <div className="flex justify-end" onClick={() => setOpen(!open)}>
+              <MdClose size={30} />
+            </div>
+            <div className="flex flex-col items-center h-full justify-between py-12">
+              <div className="flex flex-col gap-8">
+              
+
+                <motion.h1
+                  variants={slideInFromBottom(0.5)}
+                  className="text-2xl font-semibold"
+                >
+                 Test
+                </motion.h1>
+                <motion.div
+                  variants={slideInFromBottom(0.7)}
+                  className="flex gap-2"
+                >
+                  <a
+                    href="https://api.whatsapp.com/send/?phone=6282323896763"
+                    target="_blank"
+                    aria-label="Whatsapp"
+                  >
+                    <img
+                      src="/images/whatsapp.png"
+                      alt=""
+                      className="h-[30px] w-auto hover:scale-125 transition-all duration-300"
+                    />
+                  </a>
+                  <a
+                    href="https://www.instagram.com/maha.kreativa/"
+                    target="_blank"
+                    aria-label="Instagram"
+                  >
+                    <img
+                      src="/images/instagram.png"
+                      alt=""
+                      className="h-[30px] w-auto hover:scale-125 transition-all duration-300"
+                    />
+                  </a>
+                </motion.div>
+              </div>
+
+              <motion.h1 
+                variants={slideInFromBottom(1)}
+                className="text-md w-full py-2 text-white  text-center mb-8"
+              >
+                KamarHitung.id
+              </motion.h1>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
       <div ref={componentRef} className="flex flex-col w-full">
-        <Header user={userDetail} />
+        <Header user={userDetail} setOpen={setOpen} open={open}/>
 
         <div>
           <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
+          <div className="md:px-6">
+
           <Breadcrumbs
             kecamatan={data.kecamatan_name}
             kelurahan={data.kelurahan_name}
             tps={data.tps_name}
           />
+          </div>
+
 
           <div className="flex flex-row w-full justify-between px-6 md:px-12">
             <div>
@@ -338,11 +396,11 @@ export default function Home() {
 
       <div className="md:hidden flex flex-col w-full">
         <div className="flex-row mt-4  px-16 items-center">
-          <a href="/table">
-            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
+
+            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2"  onClick={handleToPageTable}>
               <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
             </div>
-          </a>
+
         </div>
 
         {/* <div className="flex flex-row mt-2  px-16 items-center">

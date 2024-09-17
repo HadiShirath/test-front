@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -41,6 +42,8 @@ export default function TableKecamatan() {
 
   const componentRef = useRef(null);
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const token = Cookies.get("access_token");
 
   useEffect(() => {
@@ -68,7 +71,7 @@ export default function TableKecamatan() {
       }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan/all", {
+    fetch(`${apiUrl}/kecamatan/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -94,7 +97,7 @@ export default function TableKecamatan() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -133,7 +136,7 @@ export default function TableKecamatan() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -158,7 +161,7 @@ export default function TableKecamatan() {
           text: error.message,
         })
       );
-  }, [navigate, kecamatan, kelurahan, tps]);
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -208,7 +211,7 @@ export default function TableKecamatan() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
+      fetch(`${apiUrl}/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -358,7 +361,7 @@ export default function TableKecamatan() {
 
       <div
         className={`${
-          expanded ? "pl-72" : "pl-28"
+          expanded ? "xl:pl-72" : "xl:pl-28"
         } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
       >
         <div className="flex flex-col w-full">
@@ -410,7 +413,10 @@ export default function TableKecamatan() {
             </div>
           </div>
 
-          <RunningText />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

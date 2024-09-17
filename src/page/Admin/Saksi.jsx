@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -39,6 +40,9 @@ export default function Saksi() {
 
   const componentRef = useRef();
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+
   const token = Cookies.get("access_token");
 
   useEffect(() => {
@@ -66,7 +70,7 @@ export default function Saksi() {
       }, 2000);
     }
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -95,7 +99,7 @@ export default function Saksi() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
+      .catch((error) =>{
         AlertError({
           title:
             error.message === "Sesi Anda Berakhir"
@@ -103,9 +107,15 @@ export default function Saksi() {
               : "Terjadi Kesalahan",
           text: error.message,
         })
+
+        if(error.message === "Sesi Anda Berakhir") {
+          clearAllCookies()
+          navigate("/login")
+        }
+        }
       );
 
-    fetch("https://api.kamarhitung.id/v1/kecamatan", {
+    fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -130,7 +140,7 @@ export default function Saksi() {
           text: error.message,
         })
       );
-  }, [navigate, kecamatan, kelurahan, tps]);
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -180,7 +190,7 @@ export default function Saksi() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
+      fetch(`${apiUrl}/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -330,7 +340,7 @@ export default function Saksi() {
 
       <div
         className={`${
-          expanded ? "pl-72" : "pl-28"
+          expanded ? "xl:pl-72" : "xl:pl-28"
         } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
       >
         <div className="flex flex-col w-full">
@@ -352,7 +362,7 @@ export default function Saksi() {
               <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
             </div>
 
-            <div className="flex flex-col w-full px-6 pt-6" >
+            <div className="flex flex-col w-full px-6 pt-6">
               <TableListSaksi
                 token={token}
                 setIsOpenModalSaksi={setIsOpenModalSaksi}
@@ -374,7 +384,10 @@ export default function Saksi() {
             </div>
           </div>
 
-          <RunningText />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

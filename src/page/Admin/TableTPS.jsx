@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -17,7 +18,7 @@ import { HiEye } from "react-icons/hi2";
 import CircularProgress from "@mui/material/CircularProgress";
 import StickyHeadTable from "../../components/StickyHeadTable";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import { AlertError } from '../../utils/customAlert';
+import { AlertError } from "../../utils/customAlert";
 
 export default function TableTPS() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -40,6 +41,8 @@ export default function TableTPS() {
 
   const token = Cookies.get("access_token");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const token = Cookies.get("access_token");
     // Membaca cookie saat aplikasi dimuat
@@ -60,7 +63,7 @@ export default function TableTPS() {
       navigate(`/login`);
     }
 
-    fetch(`https://api.kamarhitung.id/v1/kelurahan/${kelurahan}`, {
+    fetch(`${apiUrl}/kelurahan/${kelurahan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -82,7 +85,7 @@ export default function TableTPS() {
         })
       );
 
-    fetch("https://api.kamarhitung.id/v1/tps/voter/all", {
+    fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -90,7 +93,6 @@ export default function TableTPS() {
     })
       .then((response) => response.json())
       .then((data) => {
-
         const dataVoter = data.payload;
 
         const dataset = [
@@ -116,32 +118,32 @@ export default function TableTPS() {
         })
       );
 
-      fetch("https://api.kamarhitung.id/v1/kecamatan", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    fetch(`${apiUrl}/kecamatan`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
       })
-        .then((response) => {
-          if (response.status === 401) {
-            throw new Error("Sesi Anda Berakhir");
-          }
-  
-          return response.json();
+      .then((data) => {
+        setAllVotes(data.payload);
+      })
+      .catch((error) =>
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
         })
-        .then((data) => {
-          setAllVotes(data.payload);
-        })
-        .catch((error) =>
-          AlertError({ 
-            title:
-              error.message === "Sesi Anda Berakhir"
-                ? "Waktu Habis"
-                : "Terjadi Kesalahan",
-            text: error.message,
-          })
-        );
-  }, [navigate, kecamatan, kelurahan, tps]);
+      );
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handleCloseModal = () => {
     setRandomPassword("");
@@ -187,7 +189,7 @@ export default function TableTPS() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`https://api.kamarhitung.id/v1/user/${userId}`, {
+      fetch(`${apiUrl}/user/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -337,7 +339,7 @@ export default function TableTPS() {
 
       <div
         className={`${
-          expanded ? "pl-72" : "pl-28"
+          expanded ? "xl:pl-72" : "xl:pl-28"
         } flex transition-all duration-300 py-4 z-[10]  w-full h-screen`}
       >
         <div className="flex flex-col w-full">
@@ -371,12 +373,19 @@ export default function TableTPS() {
           </div>
 
           <div className="flex flex-col w-full px-6 pt-2">
-            <StickyHeadTable data={listTPS ? listTPS : []} tps navigateToPhotoAdmin/>
+            <StickyHeadTable
+              data={listTPS ? listTPS : []}
+              tps
+              navigateAdmin
+            />
           </div>
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
-          <RunningText />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

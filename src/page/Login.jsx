@@ -1,4 +1,6 @@
-// import React from 'react'
+/* eslint-disable no-undef */
+
+import React from 'react'
 import Swal from "sweetalert2";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
@@ -9,12 +11,15 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import { parseToken } from "../utils/parseToken";
 
+
 export default function Login() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isHidePassword, setIsHidePassword] = useState(true);
   const [loading, setLoading] = useState("");
   const navigate = useNavigate();
+  
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     // Membaca cookie saat aplikasi dimuat
@@ -46,7 +51,7 @@ export default function Login() {
         try {
           await axios
             .post(
-              "https://api.kamarhitung.id/v1/auth/login",
+              `${apiUrl}/auth/login`,
               {
                 username: userName,
                 password: password,
@@ -122,12 +127,12 @@ export default function Login() {
           <h1 className="text-2xl md:text-4xl">KamarHitung.id</h1>
 
           <div className="text-2xl md:text-5xl font-semibold">
-            {/* <h1>Real Quick Count Pemilihan</h1>
+            <h1>Real Quick Count Pemilihan</h1>
             <h1>Bupati & Wakil Bupati</h1>
-            <h1>Kabupaten Aceh Besar</h1> */}
-            <h1>Lorem ipsum dolor sit amet</h1>
+            <h1>Kabupaten Aceh Besar</h1>
+            {/* <h1>Lorem ipsum dolor sit amet</h1>
             <h1>consectetur adipiscing elit</h1>
-            <h2>sed do eiusmod tempor</h2>
+            <h2>sed do eiusmod tempor</h2> */}
           </div>
 
           <div className="xl:flex hidden pt-20">
