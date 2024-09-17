@@ -483,30 +483,30 @@ export default function TPS() {
             <div className="flex pr-4"></div>
 
             <div ref={componentRef}>
-            <div className="px-6 pt-8">
-              <h1 className="text-2xl font-semibold text-primary">
-                Data Informasi TPS
-              </h1>
-              <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
-            </div>
+              <div className="px-6 pt-8">
+                <h1 className="text-2xl font-semibold text-primary">
+                  Data Informasi TPS
+                </h1>
+                <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
+              </div>
 
-            <div className="flex flex-col w-full px-6 pt-6">
-              <StickyHeadTable
-                data={listDataTPS}
-                kecamatan
-                kelurahan
-                tps
-                admin
-                disableTableNavigation
-                setIsOpenModalEdit={setIsOpenModalEdit}
-                setPaslon1={setPaslon1}
-                setPaslon2={setPaslon2}
-                setPaslon3={setPaslon3}
-                setPaslon4={setPaslon4}
-                setSuaraSah={setSuaraSah}
-                setSuaraTidakSah={setSuaraTidakSah}
-              />
-            </div>
+              <div className="flex flex-col w-full px-6 pt-6">
+                <StickyHeadTable
+                  data={listDataTPS}
+                  kecamatan
+                  kelurahan
+                  tps
+                  admin
+                  disableTableNavigation
+                  setIsOpenModalEdit={setIsOpenModalEdit}
+                  setPaslon1={setPaslon1}
+                  setPaslon2={setPaslon2}
+                  setPaslon3={setPaslon3}
+                  setPaslon4={setPaslon4}
+                  setSuaraSah={setSuaraSah}
+                  setSuaraTidakSah={setSuaraTidakSah}
+                />
+              </div>
             </div>
 
             <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
@@ -522,9 +522,9 @@ export default function TPS() {
             </div>
 
             <RunningText
-        totalSuara={allVotes.total_suara}
-        persentase={allVotes.persentase}
-      />
+              totalSuara={allVotes.total_suara}
+              persentase={allVotes.persentase}
+            />
             <Footer />
           </div>
         </div>
