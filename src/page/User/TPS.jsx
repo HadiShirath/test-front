@@ -12,12 +12,9 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { MdLocalPrintshop } from "react-icons/md";
-import { pieOptions } from "../../utils/config";
+import { pieOptions, chartOptions } from "../../utils/configChart";
 import Search from "../../components/Search";
-import { useRef, useEffect, useState } from "react";
-import { useReactToPrint } from "react-to-print";
-import PrintChart from "../../components/PrintChart";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
@@ -27,8 +24,10 @@ import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import CandidateVotes from "../../components/CandidateVotes";
 import { calculatePercentages } from "../../utils/countPercentage";
-import { clearAllCookies } from '../../utils/cookies';
-import { AlertError } from '../../utils/customAlert';
+import { clearAllCookies } from "../../utils/cookies";
+import { AlertError } from "../../utils/customAlert";
+import { formatChartData, formatPieData } from '../../data/formatDataChart';
+
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -55,7 +54,8 @@ export default function TPS() {
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Lakukan pengecekan atau logika berdasarkan parameter URL dan path
+  const chartData = formatChartData(data); 
+  const pieData = formatPieData(data);  
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -74,10 +74,10 @@ export default function TPS() {
         navigate(`/login`);
       }
     } else {
-      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
@@ -101,7 +101,9 @@ export default function TPS() {
           dataVoter.paslon4,
           dataVoter.suara_tidak_sah,
         ];
-        const percentages = calculatePercentages(dataset);
+
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
@@ -133,148 +135,40 @@ export default function TPS() {
         setAllVotes(data.payload);
       })
       .catch((error) => {
-
         AlertError({
           title:
             error.message === "Sesi Anda Berakhir"
               ? "Waktu Habis"
               : "Terjadi Kesalahan",
           text: error.message,
-        })
+        });
 
-        if(error.message === "Sesi Anda Berakhir"){
-          clearAllCookies()
-          navigate("/login")
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
         }
-      }
-
-      );
-
+      });
   }, [navigate, kecamatan, kelurahan, tps, currentURL, apiUrl]);
-
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
-
-  const chartData = {
-    labels: ["Paslon1", "Paslon2", "Paslon3", "Paslon4", "Suara Tidak Sah"],
-    datasets: [
-      {
-        label: "Total Suara",
-        data: data
-          ? [
-              data.paslon1,
-              data.paslon2,
-              data.paslon3,
-              data.paslon4,
-              data.suara_tidak_sah,
-            ]
-          : [0, 0, 0, 0, 0],
-        backgroundColor: [
-          "#775DD0",
-          "#00E396",
-          "#FFB01A",
-          "#FF4560",
-          "#4BC0C0",
-          "#FF9F40",
-          "#C9CBCF",
-          "#FF5733",
-        ],
-      },
-    ],
-  };
-
-
-
+ 
   const handleToPagePhoto = (event) => {
     event.preventDefault();
     navigate(`${currentURL}/photo`);
   };
 
-  // Opsi chart
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    borderRadius: 12,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        grid: {
-          drawBorder: false,
-          display: true,
-          drawOnChartArea: true,
-          drawTicks: false,
-          borderDash: [5, 5],
-        },
-        border: {
-          display: false, // Menghilangkan garis sumbu Y
-        },
-        ticks: {
-          padding: 10,
-          color: "#9ca2b7",
-          font: {
-            size: 11,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-        beginAtZero: true,
-      },
-      x: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: true,
-          drawTicks: true,
-        },
-        ticks: {
-          // display: true,
-          color: "#9ca2b7",
-          padding: 10,
-          font: {
-            size: 12,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-      },
-    },
-  };
-
-  chartOptions.plugins = {
-    ...chartOptions.plugins,
-    datalabels: {
-      color: "#000",
-      anchor: "end",
-      align: "top",
-      offset: 4,
-      font: {
-        weight: "bold",
-        size: 16,
-      },
-      formatter: (value) => value.toLocaleString(), // Format numbers with commas
-    },
-  };
-
   return (
     <div className="flex flex-col items-center w-full">
-      <div ref={componentRef} className="flex flex-col w-full">
+      <div className="flex flex-col w-full">
         <Header user={userDetail} />
 
         <div>
           <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
-          
+
           <div className="md:px-6">
-          <Breadcrumbs
-            valueKecamatan={data.kecamatan_name}
-            valueKelurahan={data.kelurahan_name}
-            valueTps={data.tps_name}
-          />
+            <Breadcrumbs
+              valueKecamatan={data.kecamatan_name}
+              valueKelurahan={data.kelurahan_name}
+              valueTps={data.tps_name}
+            />
           </div>
 
           <div className="flex flex-row w-full justify-between px-6 md:px-12">
@@ -311,7 +205,10 @@ export default function TPS() {
           <div className="flex md:hidden w-full px-4 mt-4">
             <div className="bg-slate-100 w-full p-4 rounded-2xl">
               <h2 className="text-xl">
-                Data Masuk : <span className="font-bold text-2xl">{allVotes.persentase}%</span>{" "}
+                Data Masuk :{" "}
+                <span className="font-bold text-2xl">
+                  {allVotes.persentase}%
+                </span>{" "}
                 ({allVotes.total_suara} Suara)
               </h2>
             </div>
@@ -319,7 +216,7 @@ export default function TPS() {
 
           <div className="flex flex-row w-full px-12 pt-12 h-[500px]">
             <div className="flex flex-col w-full lg:w-1/2 h-[90%]">
-              <Pie data={chartData} options={pieOptions} />
+              <Pie data={pieData} options={pieOptions} />
             </div>
 
             <div className="hidden lg:flex flex-col w-full h-full z-10">
@@ -343,13 +240,7 @@ export default function TPS() {
         </div>
 
         <div className="hidden md:flex flex-row w-full items-center justify-center pt-8 gap-2 px-4">
-          {/* <div
-              className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-white" />
-              <h1 className="text-white text-lg">Cetak</h1>
-            </div> */}
+          
 
           <div
             className="hidden md:flex flex-row border-primary border-[3px] py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
@@ -372,20 +263,10 @@ export default function TPS() {
           </div>
         </div>
 
-        {/* <div className="flex flex-row mt-2  px-16 items-center">
-            <div
-              className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2 cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
-            </div>
-          </div> */}
+       
       </div>
 
-      <div className="hidden">
-        <PrintChart ref={componentRef} chartData={chartData} />
-      </div>
+      
       <RunningText
         totalSuara={allVotes.total_suara}
         persentase={allVotes.persentase}

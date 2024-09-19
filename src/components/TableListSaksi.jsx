@@ -134,9 +134,8 @@ export default function TableListSaksi({token, setIsOpenModalSaksi, setNameKoord
     return { kecamatan_name, kelurahan_name, tps_name, user_id, name_koordinator, hp_koordinator, code };
   }
  
-  const doubledData = dataTPS.concat(dataTPS).concat(dataTPS);
 
-  const rows = doubledData.map(
+  const rows = dataTPS.map(
     ({
       kecamatan_name,
       kelurahan_name,
@@ -157,16 +156,6 @@ export default function TableListSaksi({token, setIsOpenModalSaksi, setNameKoord
       )
   );
 
-  // const handleModalEdit = () => {
-  //   return (
-
-      
-  //     <div className="absolute z-50 w-full h-full bg-black">
-  //       <h1>102912</h1>
-  //     </div>
-  //   )
-  
-  // }
 
   const tableFirst = (value) => {
     return (

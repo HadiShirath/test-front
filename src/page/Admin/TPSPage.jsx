@@ -96,7 +96,8 @@ export default function TPS() {
           dataVoter.suara_tidak_sah,
         ];
 
-        const percentages = calculatePercentages(dataset);
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
@@ -153,15 +154,20 @@ export default function TPS() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
+      .catch((error) => {
         AlertError({
           title:
             error.message === "Sesi Anda Berakhir"
               ? "Waktu Habis"
               : "Terjadi Kesalahan",
           text: error.message,
-        })
-      );
+        });
+
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
@@ -308,9 +314,9 @@ export default function TPS() {
               }}
               className="border-opacity-40 rounded-3xl absolute"
             >
-              <div className="flex flex-row bg-white rounded-3xl mx-4 p-8 md:p-16 ">
+              <div className="flex flex-row bg-white rounded-3xl mx-6 p-8 md:p-16 ">
                 <div
-                  className="absolute right-10 cursor-pointer md:px-4 top-8"
+                  className="absolute right-12 cursor-pointer md:px-4 top-8"
                   onClick={handleCloseModal}
                 >
                   <FiX size={24} />
@@ -319,7 +325,7 @@ export default function TPS() {
                 <div className="hidden xl:flex flex-col w-[400px] mr-10">
                   {isOpenModalEdit.photo ? (
                     <div
-                      className="w-[300px] h-[500px] xl:w-[400px] xl:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
+                      className="w-[400px] h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
                       onClick={handleDetailPhoto}
                     >
                       <img
@@ -330,7 +336,7 @@ export default function TPS() {
                       />
                     </div>
                   ) : (
-                    <div className="">
+                    <div className="flex flex-col w-[400px] h-auto">
                       <img
                         src="/images/Not-found.jpg"
                         alt=""
@@ -346,7 +352,7 @@ export default function TPS() {
                   )}
                 </div>
 
-                <div>
+                <div className="flex flex-col w-full">
                   <h1 className="text-3xl font-semibold">Edit Suara TPS</h1>
                   <h1 className="text-xl max-w-[400px] pt-2">
                     Kecamatan {isOpenModalEdit.kecamatan_name} Kelurahan{" "}
@@ -362,85 +368,108 @@ export default function TPS() {
                   ) : (
                     <div className="pt-8" />
                   )}
-                  <div className="flex flex-col xl:flex-row gap-4">
-                    <div>
-                      <div className="flex flex-col bg-color1 rounded-md mt-5">
+
+                  <div className="flex flex-row w-full gap-4 my-5">
+                    <div className="flex flex-col w-full">
+                      <div className="flex flex-col bg-color1 rounded-md">
                         <h2 className="text-lg px-2 py-0.5 text-white">
                           Paslon 1
                         </h2>
                       </div>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={paslon1}
-                        onChange={handleChangePaslon1}
-                      />
+                      <div className="flex flex-col w-full">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={paslon1}
+                          onChange={handleChangePaslon1}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <div className="flex flex-col bg-color2 rounded-md mt-5">
+                    <div className="flex flex-col w-full">
+                      <div className="flex flex-col bg-color2 rounded-md">
                         <h2 className="text-lg px-2 py-0.5 text-white">
                           Paslon 2
                         </h2>
                       </div>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={paslon2}
-                        onChange={handleChangePaslon2}
-                      />
+                      <div className="flex flex-col w-full">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={paslon2}
+                          onChange={handleChangePaslon2}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col xl:flex-row gap-4">
-                    <div>
-                      <div className="flex flex-col bg-color3 rounded-md mt-5">
+
+                  <div className="flex flex-row w-full gap-4 mb-5">
+                    <div className="flex flex-col w-full">
+                      <div className="flex flex-col bg-color3 rounded-md">
                         <h2 className="text-lg px-2 py-0.5 text-white">
                           Paslon 3
                         </h2>
                       </div>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={paslon3}
-                        onChange={handleChangePaslon3}
-                      />
+                      <div className="flex flex-col w-full">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={paslon3}
+                          onChange={handleChangePaslon3}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <div className="flex flex-col bg-color4 rounded-md mt-5">
+                    <div className="flex flex-col w-full">
+                      <div className="flex flex-col bg-color4 rounded-md">
                         <h2 className="text-lg px-2 py-0.5 text-white">
                           Paslon 4
                         </h2>
                       </div>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={paslon4}
-                        onChange={handleChangePaslon4}
-                      />
+                      <div className="flex flex-col w-full">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={paslon4}
+                          onChange={handleChangePaslon4}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="flex flex-col xl:flex-row  gap-4">
-                    <div>
-                      <h2 className="text-lg pt-5">Suara Sah</h2>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={suaraSah}
-                        readOnly
-                      />
+
+                  <div className="flex flex-row w-full gap-4 mb-5">
+                    <div className="flex flex-col md:w-full w-auto">
+                      <div className="flex flex-col bg-gray-400 rounded-md">
+                        <h2 className="text-lg px-2 py-0.5 text-white">
+                          Suara Sah
+                        </h2>
+                      </div>
+                      <div className="flex flex-col w-full">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={suaraSah}
+                          disabled
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-lg pt-5">Suara Tidak Sah</h2>
-                      <input
-                        className="h-12 text-lg text-gray-600 rounded-xl px-4 bg-gray-50"
-                        type="number"
-                        value={suaraTidakSah}
-                        onChange={handleChangeSuaraTidakSah}
-                      />
+                    <div className="flex flex-col w-full">
+                      <div className="flex flex-col bg-gray-400 rounded-md">
+                        <h2 className="text-lg px-2 py-0.5 text-white">
+                          Suara Tidak Sah
+                        </h2>
+                      </div>
+                      <div className="flex flex-col w-full ">
+                        <input
+                          className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
+                          type="number"
+                          value={suaraTidakSah}
+                          onChange={handleChangeSuaraTidakSah}
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {loading ? (
-                    <div className="w-full flex flex-row mt-8  justify-center  bg-gray-300 py-4 items-center rounded-xl cursor-pointer">
+                    <div className="w-full flex flex-row mt-8 justify-center  bg-gray-300 py-4 items-center rounded-xl cursor-pointer">
                       <CircularProgress sx={{ color: "#ffffff" }} size={25} />
                       <h1 className="text-white text-xl font-semibold pl-2">
                         Loading
@@ -448,7 +477,7 @@ export default function TPS() {
                     </div>
                   ) : (
                     <div
-                      className="w-full flex flex-col mt-8  bg-primary py-4 items-center rounded-xl cursor-pointer"
+                      className="w-full flex flex-col mt-8 bg-primary py-4 items-center rounded-xl cursor-pointer"
                       onClick={handleSubmit}
                     >
                       <h1 className="text-white text-xl font-semibold">
@@ -462,7 +491,7 @@ export default function TPS() {
           </div>
         )}
 
-        <div className="flex flex-col bg-primary w-full absolute -z-20 h-52" />
+        <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
 
         <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
@@ -511,13 +540,15 @@ export default function TPS() {
 
             <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
-            <div className="flex flex-row mt-2  px-16 items-center">
-              <div
-                className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2"
-                onClick={handlePrint}
-              >
-                <MdLocalPrintshop size={24} className="text-primary" />
-                <h1 className="text-primary text-lg">Cetak</h1>
+            <div className="flex flex-row w-full justify-center px-8 pt-6">
+              <div className="flex flex-col w-full md:w-auto">
+                <div
+                  className="border-[2px] px-12 border-primary cursor-pointer py-3 flex flex-row w-full justify-center rounded-xl gap-2"
+                  onClick={handlePrint}
+                >
+                  <MdLocalPrintshop size={24} className="text-primary" />
+                  <h1 className="text-primary text-lg">Cetak</h1>
+                </div>
               </div>
             </div>
 

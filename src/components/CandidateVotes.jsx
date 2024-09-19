@@ -35,7 +35,7 @@ export default function CandidateVotes({percentage, dataVoter}) {
   
   return (
     <div className="flex flex-wrap w-full justify-center pt-8 gap-4">
-        {data.map((item, key) => (
+        {percentage && dataVoter && data.map((item, key) => (
           <div key={key} className="bg-slate-100 w-full md:w-auto mx-8 md:mx-0 py-8 px-10 rounded-3xl">
             <div className="flex flex-row items-center justify-center">
               <div className="w-[80px] h-[80px] bg-gray-600 rounded-full"></div>

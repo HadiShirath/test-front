@@ -1,6 +1,3 @@
-/* eslint-disable no-undef */
-
-import React from 'react'
 import Swal from "sweetalert2";
 import Footer from "../components/Footer";
 import { useState, useEffect } from "react";
@@ -26,7 +23,9 @@ export default function Login() {
     if (Cookies.get("access_token")) {
       const token = Cookies.get("access_token");
       const data = parseToken(token);
-      if (data.role === "saksi") {
+      if (data.role === "saksi_v2") {
+        navigate(`/saksi/v2`);
+      } else if (data.role === "saksi") {
         navigate(`/saksi`);
       } else if (data.role === "user") {
         navigate(`/user`);
@@ -63,8 +62,12 @@ export default function Login() {
             .then((response) => {
               if (response.status === 200) {
                 const token = Cookies.get("access_token");
+
                 const data = parseToken(token);
-                if (data.role === "saksi") {
+                if (data.role === "saksi_v2") {
+                  navigate("/saksi/v2");
+                } 
+                else if (data.role === "saksi") {
                   navigate("/saksi");
                 } else if (data.role === "user") {
                   navigate("/user");
@@ -127,12 +130,12 @@ export default function Login() {
           <h1 className="text-2xl md:text-4xl">KamarHitung.id</h1>
 
           <div className="text-2xl md:text-5xl font-semibold">
-            <h1>Real Quick Count Pemilihan</h1>
+            {/* <h1>Real Quick Count Pemilihan</h1>
             <h1>Bupati & Wakil Bupati</h1>
-            <h1>Kabupaten Aceh Besar</h1>
-            {/* <h1>Lorem ipsum dolor sit amet</h1>
+            <h1>Kabupaten Aceh Besar</h1> */}
+            <h1>Lorem ipsum dolor sit amet</h1>
             <h1>consectetur adipiscing elit</h1>
-            <h2>sed do eiusmod tempor</h2> */}
+            <h2>sed do eiusmod tempor</h2>
           </div>
 
           <div className="xl:flex hidden pt-20">

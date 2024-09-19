@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FormControl, TextField, MenuItem, InputLabel } from "@mui/material";
 import { kelurahanOptions, tpsOptions } from "../data/data";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 import { kecamatanOptions } from "../data/data";
 import { FiX } from "react-icons/fi";
@@ -16,9 +16,6 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
   const [loading, setLoading] = useState(false);
   const [valueTPS, setValueTPS] = useState("");
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const currentURL = location.pathname;
 
   useEffect(() => {
     if (tps) {

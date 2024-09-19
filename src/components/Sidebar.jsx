@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useContext, createContext } from "react";
-import { FaDesktop, FaTable, FaVoteYea, FaUsers, FaUser } from "react-icons/fa";
+import { FaDesktop, FaTable, FaVoteYea, FaUsers, FaUser} from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const SidebarContext = createContext();

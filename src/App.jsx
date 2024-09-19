@@ -18,6 +18,7 @@ import TableTPSAdmin from "./page/Admin/TableTPS"
 import PhotoAdmin from "./page/Admin/Photo"
 import Login from "./page/Login";
 import Saksi from "./page/Saksi/Home";
+import Saksi2 from "./page/Saksi2/Home";
 import "./App.css";
 import {
   BrowserRouter as Router,
@@ -67,6 +68,7 @@ function App() {
          
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/saksi" element={<Saksi />} />
+          <Route exact path="/saksi/v2" element={<Saksi2 />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Router>

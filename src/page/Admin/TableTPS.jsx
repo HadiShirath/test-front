@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { parseToken } from "../../utils/parseToken";
 import Cookies from "js-cookie";
@@ -19,6 +18,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import StickyHeadTable from "../../components/StickyHeadTable";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { AlertError } from "../../utils/customAlert";
+import { MdLocalPrintshop } from "react-icons/md";
+import { useReactToPrint } from "react-to-print";
+import { clearAllCookies } from '../../utils/cookies';
+
 
 export default function TableTPS() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -38,6 +41,8 @@ export default function TableTPS() {
   const [valueKecamatan, setValueKecamatan] = useState("");
   const [valueKelurahan, setValueKelurahan] = useState("");
   const [allVotes, setAllVotes] = useState("");
+
+  const componentRef = useRef();
 
   const token = Cookies.get("access_token");
 
@@ -103,7 +108,8 @@ export default function TableTPS() {
           dataVoter.suara_tidak_sah,
         ];
 
-        const percentages = calculatePercentages(dataset);
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
@@ -134,15 +140,20 @@ export default function TableTPS() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
+      .catch((error) => {
         AlertError({
           title:
             error.message === "Sesi Anda Berakhir"
               ? "Waktu Habis"
               : "Terjadi Kesalahan",
           text: error.message,
-        })
-      );
+        });
+
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies(); 
+          navigate("/login");
+        }
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handleCloseModal = () => {
@@ -225,6 +236,10 @@ export default function TableTPS() {
         );
     }
   };
+
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
   return (
     <div className="flex flex-row h-full w-full relative">
@@ -333,7 +348,7 @@ export default function TableTPS() {
         </div>
       )}
 
-      <div className="flex flex-col bg-primary w-full absolute -z-20 h-52" />
+      <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
 
       <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
@@ -353,34 +368,48 @@ export default function TableTPS() {
 
           <div className="flex pr-4"></div>
 
-          <div className="px-6 pt-8">
-            <h1 className="text-2xl font-semibold text-primary">
-              Data Tabel Informasi Suara
-            </h1>
-            <h1 className="text-2xl xl:text-4xl font-semibold">
-              Kecamatan <span className="font-bold">{valueKecamatan}</span>{" "}
-              Kelurahan <span className="font-bold">{valueKelurahan}</span>
-            </h1>
-          </div>
+          <div ref={componentRef}>
+            <div className="px-6 pt-8">
+              <h1 className="text-2xl font-semibold text-primary">
+                Data Tabel Informasi Suara
+              </h1>
+              <h1 className="text-2xl xl:text-4xl font-semibold">
+                Kecamatan <span className="font-bold">{valueKecamatan}</span>{" "}
+                Kelurahan <span className="font-bold">{valueKelurahan}</span>
+              </h1>
+            </div>
 
-          <div className="flex pt-4">
-            <Breadcrumbs
-              valueKecamatan={valueKecamatan}
-              valueKelurahan={valueKelurahan}
-              table
-              admin
-            />
-          </div>
+            <div className="flex pt-4">
+              <Breadcrumbs
+                valueKecamatan={valueKecamatan}
+                valueKelurahan={valueKelurahan}
+                table
+                admin
+              />
+            </div>
 
-          <div className="flex flex-col w-full px-6 pt-2">
-            <StickyHeadTable
-              data={listTPS ? listTPS : []}
-              tps
-              navigateAdmin
-            />
+            <div className="flex flex-col w-full px-6 pt-2">
+              <StickyHeadTable
+                data={listTPS ? listTPS : []}
+                tps
+                navigateAdmin
+              />
+            </div>
           </div>
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
+
+          <div className="flex flex-row w-full justify-center px-8 pt-6">
+            <div className="flex flex-col w-full md:w-auto">
+              <div
+                className="border-[2px] px-12 border-primary cursor-pointer py-3 flex flex-row w-full justify-center rounded-xl gap-2"
+                onClick={handlePrint}
+              >
+                <MdLocalPrintshop size={24} className="text-primary" />
+                <h1 className="text-primary text-lg">Cetak</h1>
+              </div>
+            </div>
+          </div>
 
           <RunningText
             totalSuara={allVotes.total_suara}

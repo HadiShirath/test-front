@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -41,7 +40,6 @@ export default function Saksi() {
   const componentRef = useRef();
 
   const apiUrl = import.meta.env.VITE_API_URL;
-
 
   const token = Cookies.get("access_token");
 
@@ -94,26 +92,26 @@ export default function Saksi() {
           dataVoter.suara_tidak_sah,
         ];
 
-        const percentages = calculatePercentages(dataset);
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>{
+      .catch((error) => {
         AlertError({
           title:
             error.message === "Sesi Anda Berakhir"
               ? "Waktu Habis"
               : "Terjadi Kesalahan",
           text: error.message,
-        })
+        });
 
-        if(error.message === "Sesi Anda Berakhir") {
-          clearAllCookies()
-          navigate("/login")
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
         }
-        }
-      );
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -334,7 +332,7 @@ export default function Saksi() {
         </div>
       )}
 
-      <div className="flex flex-col bg-primary w-full absolute -z-20 h-52" />
+      <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
 
       <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
@@ -374,13 +372,15 @@ export default function Saksi() {
 
           <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
-          <div className="flex flex-row mt-2  px-16 items-center">
-            <div
-              className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
+          <div className="flex flex-row w-full justify-center px-8 pt-6">
+            <div className="flex flex-col w-full md:w-auto">
+              <div
+                className="border-[2px] px-12 cursor-pointer border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2"
+                onClick={handlePrint}
+              >
+                <MdLocalPrintshop size={24} className="text-primary" />
+                <h1 className="text-primary text-lg">Cetak</h1>
+              </div>
             </div>
           </div>
 

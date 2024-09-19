@@ -1,8 +1,6 @@
 import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
-import { MdLocalPrintshop } from "react-icons/md";
 import { useRef, useEffect, useState } from "react";
-import { useReactToPrint } from "react-to-print";
 import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
@@ -89,12 +87,10 @@ export default function Home() {
           timer: 2000,
         })
       );
-  }, [navigate, kecamatan, kelurahan, tps]);
+  }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
+  
 
   const handleDetailPhoto = () => {
     setIsModalOpen(true);
@@ -161,42 +157,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* <div className="hidden md:flex flex-row w-full items-center justify-center pt-8 gap-2 px-4">
-            <div
-              className="bg-primary py-4 px-8 rounded-xl"
-              onClick={handleToPageTable}
-            >
-              <h1 className="text-white text-lg">Tampilkan Tabel Suara</h1>
-            </div>
-            <div
-              className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-white" />
-              <h1 className="text-white text-lg">Cetak</h1>
-            </div>
-          </div> */}
+          
         </div>
-        {/* <div className="md:hidden flex flex-col w-full">
-          <div className="flex-row mt-4  px-16 items-center">
-            <a href="/table">
-              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2">
-                <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
-              </div>
-            </a>
-          </div>
-
-          <div className="flex flex-row mt-2  px-16 items-center">
-            <div
-              className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2 cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
-            </div>
-          </div>
-        </div> */}
-
+      
         <RunningText
           totalSuara={allVotes.total_suara}
           persentase={allVotes.persentase}

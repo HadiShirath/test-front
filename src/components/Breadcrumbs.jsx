@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { FaHome } from "react-icons/fa";
 import { useParams } from "react-router-dom";
-import { useNavigate, useLocation} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
 export default function Breadcrumbs({
   valueKecamatan,
@@ -13,9 +13,6 @@ export default function Breadcrumbs({
 }) {
   const { kecamatan, kelurahan, tps } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const currentURL = location.pathname;
 
   // Menentukan status aktif berdasarkan props
   const activeHome = !photo && !valueKecamatan && !kelurahan && !valueTps;

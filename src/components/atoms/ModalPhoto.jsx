@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { motion } from "framer-motion";
 
-export default function ModalPhoto({ photo, isModalOpen, setIsModalOpen }) {
+export default function ModalPhoto({ photo, isModalOpen, setIsModalOpen, previewImageLocal}) {
 
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
 
@@ -25,7 +25,7 @@ export default function ModalPhoto({ photo, isModalOpen, setIsModalOpen }) {
       >
         <div className="w-full flex items-center justify-center object-contain">
           <img
-            src={`${apiUrlBase}/images/${photo}`}
+            src={previewImageLocal ? photo : `${apiUrlBase}/images/${photo}`}
             alt=""
             className="w-full xl:w-auto xl:h-[700px]"
           />

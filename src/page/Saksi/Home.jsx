@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { useState, useEffect, useRef } from "react";
 import Swal from "sweetalert2";
 import { TiTick } from "react-icons/ti";
@@ -15,7 +14,6 @@ import Dropdown, { DropdownItem } from "../../components/atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AlertError } from '../../utils/customAlert';
-
 
 export default function Saksi() {
   const inputRef = useRef();
@@ -54,11 +52,9 @@ export default function Saksi() {
 
   useEffect(() => {
     const token = Cookies.get("access_token");
-    const tokenUserTPS = Cookies.get("user");
 
     setLoadingImage(true);
 
-    if (!tokenUserTPS && token) {
       fetch(`${apiUrl}/tps`, {
         method: "GET",
         headers: {
@@ -68,7 +64,7 @@ export default function Saksi() {
       })
         .then((response) => response.json())
         .then((data) => {
-          const dataTPS = parseToken(data.payload);
+          const dataTPS = data.payload;
           setDataTPS(dataTPS);
           if (dataTPS.photo !== "") {
             setImage(dataTPS.photo);
@@ -87,12 +83,6 @@ export default function Saksi() {
 
           setLoadingImage(false);
         });
-    } else if (tokenUserTPS) {
-      const dataTPS = parseToken(tokenUserTPS);
-      setDataTPS(dataTPS);
-
-      setLoadingImage(false);
-    }
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -154,6 +144,7 @@ export default function Saksi() {
 
     const formData = new FormData();
     var file = event.target.files[0];
+    
 
     // Cek ekstensi file
     if (
@@ -192,7 +183,6 @@ export default function Saksi() {
         headers: {
           Authorization: `Bearer ${token}`, // Ganti dengan token JWT Anda
         },
-        credentials: "include",
       })
         .then((response) => {
           if (response.status === 401) {
@@ -385,15 +375,15 @@ export default function Saksi() {
             <h1 className="text-2xl xl:text-3xl font-semibold text-center pt-8">
               Kecamatan{" "}
               <span className="font-bold">
-                {dataTPS ? dataTPS.kecamatan : ""}
+                {dataTPS ? dataTPS.kecamatan_name : ""}
               </span>{" "}
               Kelurahan{" "}
               <span className="font-bold">
-                {dataTPS ? dataTPS.kelurahan : ""}
+                {dataTPS ? dataTPS.kelurahan_name : ""}
               </span>
             </h1>
             <h1 className="text-2xl xl:text-3xl font-semibold text-center pb-8">
-              <span className="font-bold">{dataTPS ? dataTPS.tps : ""}</span>
+              <span className="font-bold">{dataTPS ? dataTPS.tps_name : ""}</span>
             </h1>
           </div>
         </div>

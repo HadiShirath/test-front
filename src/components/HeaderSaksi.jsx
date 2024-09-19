@@ -1,29 +1,19 @@
 /* eslint-disable react/prop-types */
-import { FaHome } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { LuChevronFirst, LuChevronLast } from "react-icons/lu";
-import Dropdown, { DropdownItem, DropdownProfile } from "./atoms/Dropdown";
+import Cookies from "js-cookie";
+import Dropdown, { DropdownItem } from "./atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import Swal from "sweetalert2";
-import Cookies from "js-cookie";
-import PercentageVote from "./PercentageVote";
-import { useState } from "react";
 import { HiMenuAlt3 } from "react-icons/hi";
 import { motion } from "framer-motion";
 import { slideInFromBottom, sideBar } from "../utils/motion.js";
 import { FaChevronRight } from "react-icons/fa6";
-import { FaDesktop, FaTable, FaVoteYea, FaUsers } from "react-icons/fa";
+import { useState } from "react";
 
-export default function HeaderAdmin({
-  setExpanded,
-  expanded,
-  title,
-  user,
-  allVotes,
-}) {
-  const navigate = useNavigate();
+export default function HeaderSaksi({ user }) {
   const [isVisible, setIsVisible] = useState(false);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpen = () => {
     setIsVisible(true); // Make the sidebar visible
@@ -61,7 +51,7 @@ export default function HeaderAdmin({
           initial="offscreen"
           animate={open ? "onscreen" : "offscreen"}
           exit="offscreen"
-          className="fixed top-0 md:hidden w-full h-full z-[20]"
+          className="fixed md:hidden w-full h-full z-[20]"
         >
           <div
             className="w-full h-full bg-black opacity-40"
@@ -102,65 +92,12 @@ export default function HeaderAdmin({
                   variants={slideInFromBottom(0.5)}
                   className="text-xl text-center text-gray-500 uppercase px-12 pb-8"
                 >
-                  ADMIN
+                  Saksi
                 </motion.h1>
 
                 <motion.div
                   variants={slideInFromBottom(0.5)}
-                  className="mb-4 flex flex-col w-[70%] h-0.5 bg-gray-300 px-10 items-start"
-                ></motion.div>
-
-                <motion.div
-                  variants={slideInFromBottom(0.5)}
-                  className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
-                >
-                  <a href="/admin/dashboard">
-                    <div className="flex flex-row items-center">
-                      <FaDesktop size={20} className="text-blue-500" />
-                      <h1 className="pl-2">Dashboard</h1>
-                    </div>
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  variants={slideInFromBottom(0.5)}
-                  className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
-                >
-                  <a href="/admin/table">
-                    <div className="flex flex-row items-center">
-                      <FaTable size={20} className="text-orange-500" />
-                      <h1 className="pl-2">Tabel</h1>
-                    </div>
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  variants={slideInFromBottom(0.5)}
-                  className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
-                >
-                  <a href="/admin/tps">
-                    <div className="flex flex-row items-center">
-                      <FaVoteYea size={20} className="text-blue-500" />
-                      <h1 className="pl-2">TPS</h1>
-                    </div>
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  variants={slideInFromBottom(0.5)}
-                  className="pt-2 pb-8 flex flex-col w-full px-10 items-start"
-                >
-                  <a href="/admin/saksi">
-                    <div className="flex flex-row items-center">
-                      <FaUsers size={20} className="text-violet-500" />
-                      <h1 className="pl-2">Saksi</h1>
-                    </div>
-                  </a>
-                </motion.div>
-
-                <motion.div
-                  variants={slideInFromBottom(0.5)}
-                  className="flex flex-row w-full px-8"
+                  className="flex flex-row w-full px-6"
                 >
                   <div
                     className="flex flex-row bg-red-50 w-full justify-center cursor-pointer rounded-xl"
@@ -184,15 +121,29 @@ export default function HeaderAdmin({
           </motion.div>
         </motion.div>
       )}
-      <div className="flex flex-row w-full justify-between py-6">
-        <div className="flex flex-col w-full px-6">
+      <div className="flex flex-col w-full border-b-4 border-primary px-6 xl:px-12 py-8">
+        <div className="hidden xl:flex flex-col justify-center absolute">
+          <div className="flex flex-row items-center">
+            <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
+              {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+            </div>
+            <div className="flex flex-col pl-2">
+              <h1 className="text-3xl font-bold text-red-400">Kamar</h1>
+              <h1 className="text-3xl font-bold font-sans text-red-400">
+                Hitung.id
+              </h1>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center text-center w-full">
           <div className="xl:hidden flex flex-row w-full justify-between pb-3">
             <div className="flex flex-row">
               <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
                 {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
               </div>
               <div className="flex flex-col pl-2">
-                <h1 className="text-xl font-bold text-yellow-300">
+                <h1 className="text-xl font-bold text-red-400">
                   Kamar Hitung.id
                 </h1>
               </div>
@@ -204,64 +155,46 @@ export default function HeaderAdmin({
             >
               <HiMenuAlt3
                 size={30}
-                className={`text-white transition-all duration-500`}
+                className={`text-primary transition-all duration-500`}
               />
             </div>
           </div>
 
-          <div className="flex flex-row items-center">
-            <FaHome size={20} className="text-white" />
-            <h1 className="pl-2 text-white">/ {title}</h1>
-            <button
-              onClick={() => setExpanded((curr) => !curr)}
-              className="hidden xl:flex p-1.5 z-[10] rounded-lg ml-3 bg-gray-50 hover:bg-gray-100"
-            >
-              {expanded ? (
-                <LuChevronFirst size={20} />
-              ) : (
-                <LuChevronLast size={20} />
-              )}
-            </button>
-          </div>
-
-          <h1 className="text-3xl text-white font-semibold pt-2">{title}</h1>
-          <h1 className="text-xl text-white">
-            Real Quick Count Pemilihan Bupati & Wakil Bupati
+          <h1 className="text-2xl xl:text-3xl font-semibold pt-4">
+            Input Data Suara TPS
           </h1>
-          <h1 className="text-xl text-white ">Kabupaten Aceh Besar</h1>
+
+          <h1 className="text-2xl xl:text-3xl">
+            Pemilihan Bupati & Wakil Bupati
+          </h1>
+          <h1 className="text-2xl xl:text-3xl text-semibold ">
+            Kabupaten Aceh Besar
+          </h1>
         </div>
 
-        <div className="hidden xl:flex flex-col w-full justify-between items-end pr-6">
+        <div className="flex flex-col items-end justify-center absolute right-0 px-8">
           <Dropdown
             trigger={
-              <div className="flex flex-col bg-gray-600 rounded-full w-16">
-                <img
-                  src="/images/profile.jpg"
-                  alt="profile"
-                  className="rounded-full"
-                />
+              <div className="hidden xl:flex flex-row">
+                <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
+                  <img
+                    src="/images/profile.jpg"
+                    alt="profile"
+                    className="rounded-full"
+                  />
+                </div>
+                <div className="flex flex-col pl-2">
+                  <h1 className="text-xl">{user.fullname}</h1>
+                  <h1 className="text-md uppercase text-gray-600">Saksi</h1>
+                </div>
               </div>
             }
           >
-            <DropdownProfile>
-              <img src={`/images/profile.jpg`} className="w-12 rounded-full" />
-              <div className="py-2">
-                <p className="font-medium">{user ? user.fullname : ""}</p>
-                <a className="text-sm font-medium text-gray-500 uppercase">
-                  {user ? user.role : ""}
-                </a>
-              </div>
-            </DropdownProfile>
-            <hr className="py-1" />
             <DropdownItem onClick={handleLogout}>
               <FiLogOut size={20} className="text-red-600" />
               <h1 className="text-red-600">Keluar</h1>
             </DropdownItem>
           </Dropdown>
-
-          <div className="bg-white p-3 px-4 rounded-xl">
-            <PercentageVote allVotes={allVotes} />
-          </div>
         </div>
       </div>
     </>

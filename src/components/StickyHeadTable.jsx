@@ -116,8 +116,6 @@ export default function StickyHeadTable({
           const jumlahSuaraSah = paslon1 + paslon2 + paslon3 + paslon4
           setSuaraSah(jumlahSuaraSah)
           setSuaraTidakSah(suara_tidak_sah)
-
-          console.log(data);
           
 
           setIsOpenModalEdit(data)

@@ -9,7 +9,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { MdLocalPrintshop } from "react-icons/md";
 
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import StickyHeadTable from "../../components/StickyHeadTable";
@@ -22,9 +21,9 @@ import Swal from "sweetalert2";
 import Footer from "../../components/Footer";
 import { calculatePercentages } from "../../utils/countPercentage";
 import CandidateVotes from "../../components/CandidateVotes";
-import PercentageVote from '../../components/PercentageVote';
-import { clearAllCookies } from '../../utils/cookies';
-import { AlertError } from '../../utils/customAlert';
+import PercentageVote from "../../components/PercentageVote";
+import { clearAllCookies } from "../../utils/cookies";
+import { AlertError } from "../../utils/customAlert";
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -69,10 +68,10 @@ export default function Table() {
         navigate(`/login`);
       }
     } else {
-      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
@@ -115,7 +114,9 @@ export default function Table() {
           dataVoter.paslon4,
           dataVoter.suara_tidak_sah,
         ];
-        const percentages = calculatePercentages(dataset);
+
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
@@ -151,7 +152,6 @@ export default function Table() {
       );
   }, [navigate, kecamatan, apiUrl]);
 
-
   const handleToPageGraphic = (event) => {
     event.preventDefault();
 
@@ -159,74 +159,7 @@ export default function Table() {
     navigate(`${result}`);
   };
 
-  // Opsi chart
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    borderRadius: 12,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        grid: {
-          drawBorder: false,
-          display: true,
-          drawOnChartArea: true,
-          drawTicks: false,
-          borderDash: [5, 5],
-        },
-        border: {
-          display: false, // Menghilangkan garis sumbu Y
-        },
-        ticks: {
-          padding: 10,
-          color: "#9ca2b7",
-          font: {
-            size: 11,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-        beginAtZero: true,
-      },
-      x: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: true,
-          drawTicks: true,
-        },
-        ticks: {
-          // display: true,
-          color: "#9ca2b7",
-          padding: 10,
-          font: {
-            size: 12,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-      },
-    },
-  };
 
-  chartOptions.plugins = {
-    ...chartOptions.plugins,
-    datalabels: {
-      color: "#000",
-      anchor: "end",
-      align: "top",
-      offset: 4,
-      font: {
-        weight: "bold",
-        size: 16,
-      },
-      formatter: (value) => value.toLocaleString(), // Format numbers with commas
-    },
-  };
 
   return (
     <div className="flex flex-col w-full">
@@ -248,7 +181,7 @@ export default function Table() {
           </div>
 
           <div className="hidden md:flex bg-gray-100 h-full p-4 mt-4 items-center rounded-2xl">
-          <PercentageVote allVotes={allVotes} />
+            <PercentageVote allVotes={allVotes} />
           </div>
         </div>
 
@@ -258,7 +191,7 @@ export default function Table() {
 
         <div className="flex md:hidden w-full px-4 my-4">
           <div className="bg-slate-100 w-full p-4 rounded-2xl">
-          <PercentageVote allVotes={allVotes} /> 
+            <PercentageVote allVotes={allVotes} />
           </div>
         </div>
 
@@ -279,25 +212,19 @@ export default function Table() {
           >
             <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
           </div>
-          {/* <div className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl">
-          <MdLocalPrintshop size={24} className="text-white" />
-          <h1 className="text-white text-lg">Cetak</h1>
-        </div> */}
+         
         </div>
 
         <div className="md:hidden flex flex-col w-full">
           <div className="flex-row mt-4  px-16 items-center">
-              <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2" onClick={handleToPageGraphic}>
-                <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
-              </div>
+            <div
+              className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2"
+              onClick={handleToPageGraphic}
+            >
+              <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
+            </div>
           </div>
 
-          {/* <div className="flex flex-row mt-2  px-16 items-center">
-            <div className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2">
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
-            </div>
-          </div> */}
         </div>
       </div>
 

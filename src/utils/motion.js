@@ -1,11 +1,11 @@
 export function slideInFromBottom(delay) {
   return {
     offscreen: {
-      y: 80,
+      x: 80,
       opacity: 0,
     },
     onscreen: {
-      y: 0,
+      x: 0,
       opacity: 1,
       transition: {
         duration: 0.3,

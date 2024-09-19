@@ -12,12 +12,9 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { MdLocalPrintshop } from "react-icons/md";
-import { pieOptions } from "../../utils/config";
+import { pieOptions, chartOptions } from "../../utils/configChart";
 import Search from "../../components/Search";
 import { useRef, useEffect, useState } from "react";
-import { useReactToPrint } from "react-to-print";
-import PrintChart from "../../components/PrintChart";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
@@ -27,10 +24,10 @@ import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import CandidateVotes from "../../components/CandidateVotes";
 import { calculatePercentages } from "../../utils/countPercentage";
-import PercentageVote from '../../components/PercentageVote';
-import { AlertError } from '../../utils/customAlert';
-import { clearAllCookies } from '../../utils/cookies';
-
+import PercentageVote from "../../components/PercentageVote";
+import { AlertError } from "../../utils/customAlert";
+import { clearAllCookies } from "../../utils/cookies";
+import { formatChartData, formatPieData } from "../../data/formatDataChart";
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -53,14 +50,13 @@ export default function Kelurahan() {
   const [percentage, setPercentage] = useState([]);
   const [allVotes, setAllVotes] = useState("");
 
-
-
   const location = useLocation();
   const currentPath = location.pathname;
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Lakukan pengecekan atau logika berdasarkan parameter URL dan path
+  const chartData = formatChartData(data);
+  const pieData = formatPieData(data);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -79,10 +75,10 @@ export default function Kelurahan() {
         navigate(`/login`);
       }
     } else {
-      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" }); 
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
@@ -110,7 +106,9 @@ export default function Kelurahan() {
           dataVoter.paslon4,
           dataVoter.suara_tidak_sah,
         ];
-        const percentages = calculatePercentages(dataset);
+
+        // percentage paslon tanpa suara tidak sah
+        const percentages = calculatePercentages(dataset.slice(0, 4));
 
         setDataVoter(dataset);
         setPercentage(percentages);
@@ -125,155 +123,50 @@ export default function Kelurahan() {
         })
       );
 
-      fetch(`${apiUrl}/kecamatan`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+    fetch(`${apiUrl}/kecamatan`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((response) => {
         if (response.status === 401) {
           throw new Error("Sesi Anda Berakhir");
         }
-  
+
         return response.json();
       })
-        .then((data) => {
-          setAllVotes(data.payload);
-        })
-        .catch((error) => {
+      .then((data) => {
+        setAllVotes(data.payload);
+      })
+      .catch((error) => {
+        AlertError({
+          title:
+            error.message === "Sesi Anda Berakhir"
+              ? "Waktu Habis"
+              : "Terjadi Kesalahan",
+          text: error.message,
+        });
 
-          AlertError({
-            title:
-              error.message === "Sesi Anda Berakhir"
-                ? "Waktu Habis"
-                : "Terjadi Kesalahan",
-            text: error.message,
-          })
-
-          if(error.message === "Sesi Anda Berakhir"){
-            clearAllCookies()
-            navigate("/login")
-          }
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
         }
-
-        );
-
+      });
   }, [navigate, kecamatan, kelurahan, tps, currentPath, apiUrl]);
 
   const componentRef = useRef();
 
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
-
-  const chartData = {
-    labels: ["Paslon1", "Paslon2", "Paslon3", "Paslon4", "Suara Tidak Sah"],
-    datasets: [
-      {
-        label: "Total Suara",
-        data: data
-          ? [
-              data.paslon1,
-              data.paslon2,
-              data.paslon3,
-              data.paslon4,
-              data.suara_tidak_sah,
-            ]
-          : [0, 0, 0, 0, 0],
-        backgroundColor: [
-          "#775DD0",
-          "#00E396",
-          "#FFB01A",
-          "#FF4560",
-          "#4BC0C0",
-          "#FF9F40",
-          "#C9CBCF",
-          "#FF5733",
-        ],
-      },
-    ],
-  };
-
   const handleToPageTable = (event) => {
     event.preventDefault();
-   
-    const urlNew = currentPath.replace('/user', '/user/table');
+
+    const urlNew = currentPath.replace("/user", "/user/table");
     navigate(`${urlNew}`);
   };
 
   const handleToPagePhoto = (event) => {
     event.preventDefault();
     navigate(`/${kecamatan}/${kelurahan}/${tps}/photo`);
-  };
-
-  // Opsi chart
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    borderRadius: 12,
-    plugins: {
-      legend: {
-        display: false,
-      },
-    },
-    scales: {
-      y: {
-        grid: {
-          drawBorder: false,
-          display: true,
-          drawOnChartArea: true,
-          drawTicks: false,
-          borderDash: [5, 5],
-        },
-        border: {
-          display: false, // Menghilangkan garis sumbu Y
-        },
-        ticks: {
-          padding: 10,
-          color: "#9ca2b7",
-          font: {
-            size: 11,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-        beginAtZero: true,
-      },
-      x: {
-        grid: {
-          drawBorder: false,
-          display: false,
-          drawOnChartArea: true,
-          drawTicks: true,
-        },
-        ticks: {
-          // display: true,
-          color: "#9ca2b7",
-          padding: 10,
-          font: {
-            size: 12,
-            style: "normal",
-            lineHeight: 2,
-          },
-        },
-      },
-    },
-  };
-
-  chartOptions.plugins = {
-    ...chartOptions.plugins,
-    datalabels: {
-      color: "#000",
-      anchor: "end",
-      align: "top",
-      offset: 4,
-      font: {
-        weight: "bold",
-        size: 16,
-      },
-      formatter: (value) => value.toLocaleString(), // Format numbers with commas
-    },
   };
 
   return (
@@ -285,10 +178,10 @@ export default function Kelurahan() {
           <Search kecamatan={kecamatan} kelurahan={kelurahan} tps={tps} />
 
           <div className="md:px-6">
-          <Breadcrumbs
-            valueKecamatan={data.kecamatan_name}
-            valueKelurahan={data.kelurahan_name}
-          />
+            <Breadcrumbs
+              valueKecamatan={data.kecamatan_name}
+              valueKelurahan={data.kelurahan_name}
+            />
           </div>
 
           <div className="flex flex-row w-full justify-between px-6 md:px-12">
@@ -312,19 +205,19 @@ export default function Kelurahan() {
             </div>
 
             <div className="hidden md:flex bg-gray-100 h-full p-4 items-center rounded-2xl">
-            <PercentageVote allVotes={allVotes} /> 
+              <PercentageVote allVotes={allVotes} />
             </div>
           </div>
 
           <div className="flex md:hidden w-full px-4 mt-4">
             <div className="bg-slate-100 w-full p-4 rounded-2xl">
-            <PercentageVote allVotes={allVotes} />
+              <PercentageVote allVotes={allVotes} />
             </div>
           </div>
 
           <div className="flex flex-row w-full px-12 pt-12 h-[500px]">
             <div className="flex flex-col w-full lg:w-1/2 h-[90%]">
-              <Pie data={chartData} options={pieOptions} />
+              <Pie data={pieData} options={pieOptions} />
             </div>
 
             <div className="hidden lg:flex flex-col w-full h-full z-10">
@@ -375,31 +268,20 @@ export default function Kelurahan() {
 
       <div className="md:hidden flex flex-col w-full">
         <div className="flex-row mt-4  px-16 items-center">
-
-            <div className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2" onClick={handleToPageTable}>
-              <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
-            </div>
-
+          <div
+            className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2"
+            onClick={handleToPageTable}
+          >
+            <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
+          </div>
         </div>
-
-        {/* <div className="flex flex-row mt-2  px-16 items-center">
-            <div
-              className="border-[2px] border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2 cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-primary" />
-              <h1 className="text-primary text-lg">Cetak</h1>
-            </div>
-          </div> */}
       </div>
 
-      <div className="hidden">
-        <PrintChart ref={componentRef} chartData={chartData} />
-      </div>
+     
       <RunningText
-         totalSuara={allVotes.total_suara}
-         persentase={allVotes.persentase}
-         />
+        totalSuara={allVotes.total_suara}
+        persentase={allVotes.persentase}
+      />
       <Footer />
     </div>
   );
