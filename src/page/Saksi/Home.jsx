@@ -14,6 +14,8 @@ import Dropdown, { DropdownItem } from "../../components/atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AlertError } from '../../utils/customAlert';
+import HeaderSaksi from '../../components/HeaderSaksi';
+
 
 export default function Saksi() {
   const inputRef = useRef();
@@ -281,92 +283,7 @@ export default function Saksi() {
       )}
       <div className="flex flex-col w-full h-full justify-between">
         <div>
-          <div className="flex flex-col w-full border-b-4 border-primary px-6 xl:px-12 py-8">
-            <div className="hidden xl:flex flex-col justify-center absolute">
-              <div className="flex flex-row items-center">
-                <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
-                  {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
-                </div>
-                <div className="flex flex-col pl-2">
-                  <h1 className="text-3xl font-bold text-red-400">Kamar</h1>
-                  <h1 className="text-3xl font-bold font-sans text-red-400">
-                    Hitung.id
-                  </h1>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col items-center text-center w-full">
-              <div className="absolute right-5">
-                <Dropdown
-                  trigger={
-                    <div className="xl:hidden flex  flex-row">
-                      <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
-                        <img
-                          src="/images/profile.jpg"
-                          alt="profile"
-                          className="rounded-full"
-                        />
-                      </div>
-                    </div>
-                  }
-                >
-                  <DropdownItem onClick={handleLogout}>
-                    <FiLogOut size={20} className="text-red-600" />
-                    <h1 className="text-red-600">Keluar</h1>
-                  </DropdownItem>
-                </Dropdown>
-              </div>
-
-              <div className="xl:hidden flex flex-row items-center pb-3">
-                <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
-                  {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
-                </div>
-                <div className="flex flex-col pl-2">
-                  <h1 className="text-xl font-bold text-red-400">
-                    Kamar Hitung.id
-                  </h1>
-                </div>
-              </div>
-
-              <h1 className="text-2xl xl:text-3xl font-semibold">
-                Input Foto Form C1
-              </h1>
-              <h1 className="text-2xl xl:text-3xl">
-                Pemilihan Bupati & Wakil Bupati
-              </h1>
-              <h1 className="text-2xl xl:text-3xl text-semibold ">
-                Kabupaten Aceh Besar
-              </h1>
-            </div>
-
-            <div className="flex flex-col items-end justify-center absolute right-0 px-8">
-              <Dropdown
-                trigger={
-                  <div className="hidden xl:flex flex-row">
-                    <div className="bg-gray-600 rounded-full w-[50px] h-[50px]">
-                      <img
-                        src="/images/profile.jpg"
-                        alt="profile"
-                        className="rounded-full"
-                      />
-                    </div>
-                    <div className="flex flex-col pl-2">
-                      <h1 className="text-xl">
-                        {dataTPS ? dataTPS.fullname : ""}
-                      </h1>
-                      <h1 className="text-md text-gray-600">Saksi</h1>
-                    </div>
-                  </div>
-                }
-              >
-                <DropdownItem onClick={handleLogout}>
-                  <FiLogOut size={20} className="text-red-600" />
-                  <h1 className="text-red-600">Keluar</h1>
-                </DropdownItem>
-              </Dropdown>
-            </div>
-          </div>
+          <HeaderSaksi user={dataTPS} />
 
           <div className="flex flex-col w-full bg-gray-100 px-12">
             <h1 className="text-2xl xl:text-3xl font-semibold text-center pt-8">

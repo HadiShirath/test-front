@@ -521,7 +521,7 @@ export default function TPS() {
 
               <div className="flex flex-col w-full px-6 pt-6">
                 <StickyHeadTable
-                  data={listDataTPS}
+                  data={listDataTPS ? listDataTPS : []}
                   kecamatan
                   kelurahan
                   tps
