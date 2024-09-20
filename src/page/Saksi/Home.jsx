@@ -59,8 +59,7 @@ export default function Saksi() {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
+        }
       })
         .then((response) => response.json())
         .then((data) => {
