@@ -199,7 +199,7 @@ export default function Saksi() {
             // Tangani status 400
             Swal.fire({
               title: "Upload Foto Gagal",
-              text: "Harap pilih foto JPG/PNG",
+              text: "Harap pilih foto Jpg/Png",
               icon: "error",
               showConfirmButton: false,
               timer: 2000,
