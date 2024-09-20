@@ -225,8 +225,6 @@ export default function Saksi() {
               timer: 2000,
             });
 
-            Cookies.remove("user");
-
             setTimeout(() => {
               window.location.reload();
             }, 2000);
