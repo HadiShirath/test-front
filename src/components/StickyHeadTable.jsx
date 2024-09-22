@@ -121,8 +121,8 @@ export default function StickyHeadTable({
           setIsOpenModalEdit(data)
         }}
       >
-        <div className="flex w-full justify-center bg-orange-400 p-1 text-white rounded-lg">
-          Edit
+        <div className="flex w-full justify-center bg-orange-400 text-white rounded-lg">
+         <h1 className="px-4 py-1">Edit</h1>
         </div>
       </TableCell>
     );
@@ -287,6 +287,7 @@ export default function StickyHeadTable({
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead sx={{ backgroundColor: "#008FFB" }}>
           <TableRow>
+            {tableTitle("No.")}
             {!admin && tableTitleFirst(tps ? "TPS" : kelurahan ? "Kelurahan" : "Kecamatan")}
             {admin && tableTitleFirst("Kecamatan")}
             {admin && tableTitleFirst("Kelurahan")}
@@ -315,6 +316,8 @@ export default function StickyHeadTable({
                 },
               }}
             >
+               {tableCell(key +1 , row.code)}
+
               {kecamatan &&
                 !kelurahan &&
                 tableCellKecamatan(row.kecamatan_name, row.code)}

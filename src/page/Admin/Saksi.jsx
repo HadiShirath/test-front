@@ -56,7 +56,7 @@ export default function Saksi() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -99,14 +99,6 @@ export default function Saksi() {
         setPercentage(percentages);
       })
       .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
         if (error.message === "Sesi Anda Berakhir") {
           clearAllCookies();
           navigate("/login");
@@ -129,15 +121,7 @@ export default function Saksi() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+     
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({

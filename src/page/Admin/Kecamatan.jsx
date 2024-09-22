@@ -70,7 +70,7 @@ export default function Beranda() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -113,7 +113,14 @@ export default function Beranda() {
 
         setDataVoter(dataset);
         setPercentage(percentages);
+      })
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
       });
+
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -131,20 +138,7 @@ export default function Beranda() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
-      });
+     
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   return (

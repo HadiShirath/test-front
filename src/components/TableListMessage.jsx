@@ -17,9 +17,6 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TableHead from "@mui/material/TableHead";
-import { useEffect } from "react";
-import Swal from "sweetalert2";
-import { useState } from "react";
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -90,80 +87,40 @@ TablePaginationActions.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
 };
 
-export default function TableListSaksi({
-  token,
-  setIsOpenModalSaksi,
-  setNameKoordinator,
-  setHpKoordinator,
-}) {
+export default function TableListMessage({ data, inbox, outbox }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [dataTPS, setDataTPS] = useState([]);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
-
-  useEffect(() => {
-    fetch(`${apiUrl}/tps/saksi`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setDataTPS(data.payload);
-      })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
-  }, [token, apiUrl]);
-
-  function createData(
-    kecamatan_name,
-    kelurahan_name,
-    tps_name,
-    user_id,
-    name_koordinator,
-    hp_koordinator,
-    code
-  ) {
-    return {
-      kecamatan_name,
-      kelurahan_name,
-      tps_name,
-      user_id,
-      name_koordinator,
-      hp_koordinator,
-      code,
-    };
+  function createData(id, number_phone, message, created_at, updated_at) {
+    return { id, number_phone, message, created_at, updated_at };
   }
 
-  const rows = dataTPS.map(
-    ({
-      kecamatan_name,
-      kelurahan_name,
-      tps_name,
-      user_id,
-      name_koordinator,
-      hp_koordinator,
-      code,
-    }) =>
-      createData(
-        kecamatan_name,
-        kelurahan_name,
-        tps_name,
-        user_id,
-        name_koordinator,
-        hp_koordinator,
-        code
+  function createDataOutbox(
+    id,
+    number_phone,
+    message,
+    processed,
+    created_at,
+    updated_at
+  ) {
+    return { id, number_phone, message, processed, created_at, updated_at };
+  }
+
+  const rows = inbox
+    ? data.map(({ id, sender_number, message, created_at, updated_at }) =>
+        createData(id, sender_number, message, created_at, updated_at)
       )
-  );
+    : data.map(
+        ({ id, receiver_number, message, processed, created_at, updated_at }) =>
+          createDataOutbox(
+            id,
+            receiver_number,
+            message,
+            processed,
+            created_at,
+            updated_at
+          )
+      );
 
   const tableFirst = (value) => {
     return (
@@ -192,54 +149,75 @@ export default function TableListSaksi({
     );
   };
 
-  const tableCell = (value) => {
+  const tableTime = (value) => {
+    const formattedTimeSplit = value ? value.split(",") : value;
+    const date = formattedTimeSplit ? formattedTimeSplit[0] : "";
+    const time = formattedTimeSplit ? formattedTimeSplit[1] : "";
+
     return (
       <TableCell
         component="th"
         scope="row"
         sx={{ fontFamily: "sans-serif", fontSize: 16 }}
         className="cursor-pointer"
+        align="center"
       >
-        {value}
+        <div className="flex flex-col px-12">
+          <div>{date}</div>
+          <h1 className="text-gray-400">{time}</h1>
+        </div>
       </TableCell>
     );
   };
 
-  const tableEdit = (
-    kecamatan_name,
-    kelurahan_name,
-    tps_name,
-    user_id,
-    name_koordinator,
-    hp_koordinator,
-    code
-  ) => {
+  const tableStatus = () => {
+    return (
+      <TableCell
+        sx={{ fontFamily: "sans-serif", fontSize: 16 }}
+        className="cursor-pointer"
+        align="center"
+      >
+        <div className="bg-green-100 mx-8 rounded-md">
+          <h1 className="text-green-800 py-2 px-4">Masuk</h1>
+        </div>
+      </TableCell>
+    );
+  };
+
+  const tableStatusOutbox = (status) => {
+    return (
+      <TableCell
+        sx={{ fontFamily: "sans-serif", fontSize: 16 }}
+        className="cursor-pointer"
+        align="center"
+      >
+        <div
+          className={`${status ? "bg-green-100" : "bg-orange-100"} mx-8 rounded-md`}
+        >
+          <h1
+            className={`${status ? "text-green-800" : "text-orange-500 px-4"} py-2`}
+          >
+            {status ? "Terkirim" : "Pending"}
+          </h1>
+        </div>
+      </TableCell>
+    );
+  };
+
+  const tableCell = (value) => {
     return (
       <TableCell
         component="th"
         scope="row"
-        sx={{ fontFamily: "sans-serif", fontSize: 16 }}
-        className="cursor-pointer "
-        align="center"
-        onClick={() => {
-          const data = {
-            kecamatan_name: kecamatan_name,
-            kelurahan_name: kelurahan_name,
-            tps_name: tps_name,
-            user_id: user_id,
-            name_koordinator: name_koordinator,
-            hp_koordinator: hp_koordinator,
-            code: code,
-          };
-          setNameKoordinator(name_koordinator);
-          setHpKoordinator(hp_koordinator);
-
-          setIsOpenModalSaksi(data);
+        sx={{
+          fontFamily: "sans-serif",
+          fontSize: 16,
+          maxWidth: 250,
+          overflow: 'hidden',
         }}
+        className="cursor-pointer"
       >
-        <div className="flex w-full justify-center bg-orange-400 text-white rounded-lg">
-          <h1 className="px-3 py-1">Edit</h1>
-        </div>
+        {value}
       </TableCell>
     );
   };
@@ -265,13 +243,15 @@ export default function TableListSaksi({
             <TableCell sx={{ color: "#ffffff" }} align="center">
               No.
             </TableCell>
-            <TableCell sx={{ color: "#ffffff" }}>Kecamatan</TableCell>
-            <TableCell sx={{ color: "#ffffff" }}>Kelurahan</TableCell>
-            <TableCell sx={{ color: "#ffffff" }}>TPS</TableCell>
-            <TableCell sx={{ color: "#ffffff" }}>Nama Koordinator</TableCell>
-            <TableCell sx={{ color: "#ffffff" }}>Hp Koordinator</TableCell>
+            <TableCell sx={{ color: "#ffffff" }}>
+              {inbox ? "Pengirim" : "Penerima"}
+            </TableCell>
+            <TableCell sx={{ color: "#ffffff" }}>Pesan</TableCell>
             <TableCell sx={{ color: "#ffffff" }} align="center">
-              Aksi
+              Tanggal
+            </TableCell>
+            <TableCell sx={{ color: "#ffffff" }} align="center">
+              Status
             </TableCell>
           </TableRow>
         </TableHead>
@@ -289,20 +269,11 @@ export default function TableListSaksi({
               }}
             >
               {tableNumber(page * rowsPerPage + index + 1)}
-              {tableFirst(row.kecamatan_name)}
-              {tableCell(row.kelurahan_name)}
-              {tableCell(row.tps_name)}
-              {tableCell(row.name_koordinator)}
-              {tableCell(row.hp_koordinator)}
-              {tableEdit(
-                row.kecamatan_name,
-                row.kelurahan_name,
-                row.tps_name,
-                row.user_id,
-                row.name_koordinator,
-                row.hp_koordinator,
-                row.code
-              )}
+              {tableFirst(row.number_phone)}
+              {tableCell(row.message)}
+              {tableTime(row.created_at)}
+              {inbox && tableStatus()}
+              {outbox && tableStatusOutbox(row.processed)}
             </TableRow>
           ))}
           {emptyRows > 0 && (

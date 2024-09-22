@@ -43,7 +43,7 @@ export default function TableKelurahan() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -72,15 +72,12 @@ export default function TableKelurahan() {
         setListKelurahan(data.payload);
         setValueKecamatan(data.payload[0].kecamatan_name);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan/voter/${kecamatan}`, {
       method: "GET",
@@ -112,15 +109,6 @@ export default function TableKelurahan() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -138,20 +126,7 @@ export default function TableKelurahan() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
-      });
+      
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({

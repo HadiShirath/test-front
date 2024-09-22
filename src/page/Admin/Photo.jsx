@@ -23,7 +23,6 @@ export default function Photo() {
   const apiUrl = import.meta.env.VITE_API_URL;
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
 
-
   useEffect(() => {
     const token = Cookies.get("access_token");
     // Membaca cookie saat aplikasi dimuat
@@ -37,7 +36,7 @@ export default function Photo() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -65,15 +64,12 @@ export default function Photo() {
       .then((data) => {
         setData(data.payload);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -91,21 +87,11 @@ export default function Photo() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handleDetailPhoto = () => {
     setIsModalOpen(true);
   };
-
 
   return (
     <>
@@ -117,8 +103,7 @@ export default function Photo() {
         />
       )}
       <div className="flex flex-row h-full w-full relative">
-     
-      <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
+        <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
 
         <Sidebar expanded={expanded} setExpanded={setExpanded} />
 
@@ -136,60 +121,57 @@ export default function Photo() {
               allVotes={allVotes}
             />
 
-
-          <div className="flex flex-col w-full items-center">
-
-            <div className="px-6 pt-12 text-center">
-              <h1 className="text-2xl font-semibold text-primary">
-               Data Foto Form C1
-              </h1>
-              <h1 className="text-xl xl:text-3xl font-semibold">
-                Kecamatan <span>{data.kecamatan_name},</span> Kelurahan{" "}
-                <span>{data.kelurahan_name},</span> {data.tps_name}{" "}
-              </h1>
-            </div>
-
-            <div className="flex pt-4">
-              <Breadcrumbs
-                valueKecamatan={data.kecamatan_name}
-                valueKelurahan={data.kelurahan_name}
-                valueTps={data.tps_name}
-                photo
-                admin
-              />
-            </div>
-
-            {data.photo && data.photo !== "" ? (
-              <div className="flex flex-col w-full items-center px-6 py-6">
-                <div
-                  className="w-full h-[500px] sm:w-[400px] sm:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
-                  onClick={handleDetailPhoto}
-                >
-                  <img
-                    id="image"
-                    src={`${apiUrlBase}/images/${data.photo}`}
-                    alt="form-c1"
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                </div>
+            <div className="flex flex-col w-full items-center">
+              <div className="px-6 pt-12 text-center">
+                <h1 className="text-2xl font-semibold text-primary">
+                  Data Foto Form C1
+                </h1>
+                <h1 className="text-xl xl:text-3xl font-semibold">
+                  Kecamatan <span>{data.kecamatan_name},</span> Kelurahan{" "}
+                  <span>{data.kelurahan_name},</span> {data.tps_name}{" "}
+                </h1>
               </div>
-            ) : (
-              <div className="flex flex-col w-full items-center py-6">
-                <img
-                  src="/images/Not-found.jpg"
-                  alt=""
-                  className="w-full h-auto sm:w-[450px] sm:h-[450px]"
+
+              <div className="flex pt-4">
+                <Breadcrumbs
+                  valueKecamatan={data.kecamatan_name}
+                  valueKelurahan={data.kelurahan_name}
+                  valueTps={data.tps_name}
+                  photo
+                  admin
                 />
-                <h1 className="text-2xl text-center xl:text-4xl font-semibold text-orange-500 pt-8">
-                  TPS ini Belum Ada Foto C1
-                </h1>
-                <h1 className="text-xl xl:text-3xl text-gray-500 text-center">
-                  Data Foto tidak ditemukan
-                </h1>
               </div>
-            )}
-          </div>
 
+              {data.photo && data.photo !== "" ? (
+                <div className="flex flex-col w-full items-center px-6 py-6">
+                  <div
+                    className="w-full h-[500px] sm:w-[400px] sm:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
+                    onClick={handleDetailPhoto}
+                  >
+                    <img
+                      id="image"
+                      src={`${apiUrlBase}/images/${data.photo}`}
+                      alt="form-c1"
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col w-full items-center py-6">
+                  <img
+                    src="/images/Not-found.jpg"
+                    alt=""
+                    className="w-full h-auto sm:w-[450px] sm:h-[450px]"
+                  />
+                  <h1 className="text-2xl text-center xl:text-4xl font-semibold text-orange-500 pt-8">
+                    TPS ini Belum Ada Foto C1
+                  </h1>
+                  <h1 className="text-xl xl:text-3xl text-gray-500 text-center">
+                    Data Foto tidak ditemukan
+                  </h1>
+                </div>
+              )}
+            </div>
 
             <RunningText
               totalSuara={allVotes.total_suara}

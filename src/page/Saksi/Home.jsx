@@ -10,12 +10,9 @@ import ModalPhoto from "../../components/atoms/ModalPhoto";
 import { clearAllCookies } from "../../utils/cookies";
 import { parseToken } from "../../utils/parseToken";
 import Footer from "../../components/Footer";
-import Dropdown, { DropdownItem } from "../../components/atoms/Dropdown";
-import { FiLogOut } from "react-icons/fi";
 import CircularProgress from "@mui/material/CircularProgress";
-import { AlertError } from '../../utils/customAlert';
-import HeaderSaksi from '../../components/HeaderSaksi';
-
+import { AlertError } from "../../utils/customAlert";
+import HeaderSaksi from "../../components/HeaderSaksi";
 
 export default function Saksi() {
   const inputRef = useRef();
@@ -25,7 +22,7 @@ export default function Saksi() {
   const navigate = useNavigate();
   const [dataTPS, setDataTPS] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
-  const [allVotes, setAllVotes] = useState("")
+  const [allVotes, setAllVotes] = useState("");
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
@@ -43,10 +40,10 @@ export default function Saksi() {
         navigate("/login");
       }
     } else {
-      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" }); 
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
@@ -57,33 +54,28 @@ export default function Saksi() {
 
     setLoadingImage(true);
 
-      fetch(`${apiUrl}/tps`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
+    fetch(`${apiUrl}/tps`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const dataTPS = data.payload;
+        setDataTPS(dataTPS);
+        if (dataTPS.photo !== "") {
+          setImage(dataTPS.photo);
         }
+
+        setLoadingImage(false);
       })
-        .then((response) => response.json())
-        .then((data) => {
-          const dataTPS = data.payload;
-          setDataTPS(dataTPS);
-          if (dataTPS.photo !== "") {
-            setImage(dataTPS.photo);
-          }
-
-          setLoadingImage(false);
-        })
-        .catch((error) => {
-          Swal.fire({
-            title: "Terjadi Kesalahan",
-            text: error,
-            icon: "error",
-            showConfirmButton: false,
-            timer: 2000,
-          });
-
-          setLoadingImage(false);
-        });
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -91,26 +83,17 @@ export default function Saksi() {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((response) => {
-      if (response.status === 401) {
-        throw new Error("Sesi Anda Berakhir");
-      }
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
 
-      return response.json();
-    })
+        return response.json();
+      })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
-  }, [apiUrl]);
+      });
+  }, [apiUrl, navigate]);
 
   const handleImageClick = () => {
     inputRef.current.click();
@@ -120,32 +103,12 @@ export default function Saksi() {
     setIsModalOpen(true);
   };
 
-  const handleLogout = () => {
-    Swal.fire({
-      title: "Keluar Akun",
-      text: "Apakah anda yakin?",
-      // icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yakin",
-      confirmButtonColor: "#ef4444",
-      focusConfirm: false,
-      cancelButtonText: "Batal",
-      reverseButtons: true,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Cookies.remove("access_token");
-        Cookies.remove("user");
-        navigate("/login");
-      }
-    });
-  };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault(); // Mencegah pengiriman formulir default
 
     const formData = new FormData();
     var file = event.target.files[0];
-    
 
     // Cek ekstensi file
     if (
@@ -297,7 +260,9 @@ export default function Saksi() {
               </span>
             </h1>
             <h1 className="text-2xl xl:text-3xl font-semibold text-center pb-8">
-              <span className="font-bold">{dataTPS ? dataTPS.tps_name : ""}</span>
+              <span className="font-bold">
+                {dataTPS ? dataTPS.tps_name : ""}
+              </span>
             </h1>
           </div>
         </div>
@@ -390,10 +355,10 @@ export default function Saksi() {
         </div>
 
         <div>
-        <RunningText
-        totalSuara={allVotes.total_suara}
-        persentase={allVotes.persentase}
-      />
+          <RunningText
+            totalSuara={allVotes.total_suara}
+            persentase={allVotes.persentase}
+          />
           <Footer />
         </div>
       </div>

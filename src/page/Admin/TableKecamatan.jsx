@@ -42,7 +42,7 @@ export default function TableKecamatan() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -69,16 +69,12 @@ export default function TableKecamatan() {
       })
       .then((data) => {
         setListKecamatan(data.payload);
-      })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+      }).catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
@@ -109,16 +105,7 @@ export default function TableKecamatan() {
 
         setDataVoter(dataset);
         setPercentage(percentages);
-      })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -136,20 +123,7 @@ export default function TableKecamatan() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
-      });
+      
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
@@ -204,9 +178,9 @@ export default function TableKecamatan() {
                 kecamatan
               />
             </div>
-          </div>
 
-          <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
+            <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
+          </div>
 
           <div className="flex flex-row w-full justify-center px-8 pt-6">
             <div className="flex flex-col w-full md:w-auto">

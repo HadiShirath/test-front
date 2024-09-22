@@ -5,7 +5,6 @@ import { LuChevronFirst, LuChevronLast } from "react-icons/lu";
 import Dropdown, { DropdownItem, DropdownProfile } from "./atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import Swal from "sweetalert2";
-import Cookies from "js-cookie";
 import PercentageVote from "./PercentageVote";
 import { useState } from "react";
 import { HiMenuAlt3 } from "react-icons/hi";
@@ -13,6 +12,7 @@ import { motion } from "framer-motion";
 import { slideInFromBottom, sideBar } from "../utils/motion.js";
 import { FaChevronRight } from "react-icons/fa6";
 import { FaDesktop, FaTable, FaVoteYea, FaUsers } from "react-icons/fa";
+import { clearAllCookies } from '../utils/cookies';
 
 export default function HeaderAdmin({
   setExpanded,
@@ -48,7 +48,7 @@ export default function HeaderAdmin({
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        Cookies.remove("access_token");
+        clearAllCookies()
         navigate("/login");
       }
     });

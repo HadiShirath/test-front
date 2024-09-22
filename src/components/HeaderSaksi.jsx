@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import Dropdown, { DropdownItem } from "./atoms/Dropdown";
 import { FiLogOut } from "react-icons/fi";
 import Swal from "sweetalert2";
@@ -9,6 +8,7 @@ import { motion } from "framer-motion";
 import { slideInFromBottom, sideBar } from "../utils/motion.js";
 import { FaChevronRight } from "react-icons/fa6";
 import { useState } from "react";
+import { clearAllCookies } from '../utils/cookies';
 
 export default function HeaderSaksi({ user }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -38,7 +38,7 @@ export default function HeaderSaksi({ user }) {
       reverseButtons: true,
     }).then((result) => {
       if (result.isConfirmed) {
-        Cookies.remove("access_token");
+        clearAllCookies()
         navigate("/login");
       }
     });

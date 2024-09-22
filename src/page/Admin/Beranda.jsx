@@ -26,8 +26,7 @@ import HeaderAdmin from "../../components/HeaderAdmin";
 import { clearAllCookies } from "../../utils/cookies";
 import { AlertError } from "../../utils/customAlert";
 import PercentageVote from "../../components/PercentageVote";
-import { formatChartData, formatPieData } from '../../data/formatDataChart';
-
+import { formatChartData, formatPieData } from "../../data/formatDataChart";
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -53,8 +52,8 @@ export default function Beranda() {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   // Dapatkan data chart
-  const chartData = formatChartData(data)
-  const pieData = formatPieData(data)
+  const chartData = formatChartData(data);
+  const pieData = formatPieData(data);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -70,7 +69,7 @@ export default function Beranda() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -116,13 +115,10 @@ export default function Beranda() {
         setPercentage(percentages);
       })
       .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
       });
 
     fetch(`${apiUrl}/kecamatan`, {
@@ -140,23 +136,8 @@ export default function Beranda() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
       });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
-
 
   return (
     <div className="flex flex-row h-full w-full">

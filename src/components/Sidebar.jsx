@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { useContext, createContext } from "react";
-import { FaDesktop, FaTable, FaVoteYea, FaUsers, FaUser} from "react-icons/fa";
+import { FaDesktop, FaTable, FaVoteYea, FaUsers, FaUser } from "react-icons/fa";
+import { HiMail, HiMailOpen } from "react-icons/hi";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const SidebarContext = createContext();
 
 export default function Sidebar({ setExpanded, expanded }) {
-
   return (
     <div className="z-[50] fixed hidden xl:flex">
       <SidebarContainer expanded={expanded} setExpanded={setExpanded}>
@@ -30,6 +30,17 @@ export default function Sidebar({ setExpanded, expanded }) {
           icon={<FaUsers size={18} className="text-violet-500" />}
           text="Saksi"
           path="/admin/saksi"
+        />
+        <hr className="my-3" />
+        <SidebarItem
+          icon={<HiMail size={20} className="text-yellow-500" />}
+          text="Pesan Masuk"
+          path="/admin/inbox"
+        />
+        <SidebarItem
+          icon={<HiMailOpen size={20} className="text-red-500" />}
+          text="Pesan Keluar"
+          path="/admin/outbox"
         />
         <hr className="my-3" />
         <SidebarItem
@@ -116,10 +127,14 @@ export function SidebarItem({ icon, text, path, alert }) {
       navigate("/admin/dashboard");
     } else if (text === "Saksi") {
       navigate("/admin/saksi");
+    } else if (text === "Pesan Masuk") {
+      navigate("/admin/inbox");
+    } else if (text === "Pesan Keluar") {
+      navigate("/admin/outbox");
     } else if (text === "TPS") {
       navigate("/admin/tps");
-    } else if(text === "Tabel") {
-        navigate("/admin/table")
+    } else if (text === "Tabel") {
+      navigate("/admin/table");
     }
   };
 

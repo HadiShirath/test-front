@@ -61,11 +61,16 @@ export default function TableTPS() {
       setUserDetail(user);
 
       if (data.role !== "admin") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
-      navigate(`/login`);
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
+
+      setTimeout(() => {
+        clearAllCookies();
+        navigate("/login");
+      }, 2000);
     }
 
     fetch(`${apiUrl}/kelurahan/${kelurahan}`, {
@@ -80,15 +85,12 @@ export default function TableTPS() {
         setValueKecamatan(data.payload[0].kecamatan_name);
         setValueKelurahan(data.payload[0].kelurahan_name);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
@@ -114,15 +116,6 @@ export default function TableTPS() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -140,20 +133,7 @@ export default function TableTPS() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies(); 
-          navigate("/login");
-        }
-      });
+      
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handleCloseModal = () => {

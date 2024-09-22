@@ -62,7 +62,7 @@ export default function Table() {
       setUserDetail(user);
 
       if (data.role !== "user") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {

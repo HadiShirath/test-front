@@ -8,8 +8,8 @@ import Swal from "sweetalert2";
 import ModalPhoto from "../../components/atoms/ModalPhoto";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
-import { AlertError } from '../../utils/customAlert';
-import { clearAllCookies } from '../../utils/cookies';
+import { AlertError } from "../../utils/customAlert";
+import { clearAllCookies } from "../../utils/cookies";
 
 export default function Home() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -21,7 +21,6 @@ export default function Home() {
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
-
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -36,14 +35,14 @@ export default function Home() {
       setUserDetail(user);
 
       if (data.role !== "user") {
-        Cookies.remove("access_token");
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
-      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });  
+      AlertError({ title: "Waktu Habis", text: "Sesi Anda Berakhir" });
 
       setTimeout(() => {
-        clearAllCookies(); 
+        clearAllCookies();
         navigate("/login");
       }, 2000);
     }
@@ -90,7 +89,6 @@ export default function Home() {
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const componentRef = useRef();
-  
 
   const handleDetailPhoto = () => {
     setIsModalOpen(true);
@@ -156,10 +154,8 @@ export default function Home() {
               )}
             </div>
           </div>
-
-          
         </div>
-      
+
         <RunningText
           totalSuara={allVotes.total_suara}
           persentase={allVotes.persentase}
