@@ -23,6 +23,7 @@ export default function Saksi() {
   const [dataTPS, setDataTPS] = useState("");
   const [loadingImage, setLoadingImage] = useState(false);
   const [allVotes, setAllVotes] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
@@ -103,9 +104,10 @@ export default function Saksi() {
     setIsModalOpen(true);
   };
 
-
   const handleFormSubmit = async (event) => {
     event.preventDefault(); // Mencegah pengiriman formulir default
+
+    setLoading(true);
 
     const formData = new FormData();
     var file = event.target.files[0];
@@ -116,6 +118,7 @@ export default function Saksi() {
       file.type != "image/png" &&
       file.type != "image/png"
     ) {
+      setLoading(false);
       return Swal.fire({
         title: "Upload File Gagal",
         text: "Harap memilih file JPG/PNG",
@@ -128,6 +131,7 @@ export default function Saksi() {
     // Ukuran file max 5 MB
     const MAX_DATA_SIZE = 5 * 1024 * 1024; // 10 MB
     if (file.size > MAX_DATA_SIZE) {
+      setLoading(false);
       return Swal.fire({
         title: "File Terlalu Besar",
         text: "File maksimal 5 MB",
@@ -152,7 +156,7 @@ export default function Saksi() {
           if (response.status === 401) {
             throw new Error("Unauthorized");
           } else if (response.status === 404) {
-            // Tangani status 401 Unauthorized
+            // Tangani status 404
             Swal.fire({
               title: "Upload Foto Gagal",
               text: "File photo tidak ditemukan",
@@ -170,7 +174,7 @@ export default function Saksi() {
               timer: 2000,
             });
           }
-
+          
           // Cek status lainnya
           if (!response.ok) {
             throw new Error("Upload Foto Error");
@@ -193,6 +197,8 @@ export default function Saksi() {
               window.location.reload();
             }, 2000);
           } else {
+            setLoading(false);
+
             Swal.fire({
               title: "Upload Foto Gagal",
               text: data.message,
@@ -203,6 +209,9 @@ export default function Saksi() {
           }
         })
         .catch((error) => {
+          
+          setLoading(false);
+
           if (error.message === "Failed to fetch") {
             Swal.fire({
               title: "Upload Foto Gagal",
@@ -220,7 +229,6 @@ export default function Saksi() {
     Swal.fire({
       title: "Ganti Foto Form C1",
       text: "Apakah Kamu Yakin?",
-      // icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yakin",
       confirmButtonColor: "#008FFB",
@@ -274,7 +282,7 @@ export default function Saksi() {
                 {" "}
                 <CircularProgress size={30} /> <h1 className="pt-4">Loading</h1>
               </div>
-            ) : dataTPS || image ? (
+            ) : (dataTPS && dataTPS.photo !== "") || image ? (
               <div>
                 <div
                   className="w-[300px] h-[400px] xl:w-[400px] xl:h-[600px] rounded-2xl border-gray-200 border-[4px] relative"
@@ -303,15 +311,27 @@ export default function Saksi() {
                     onChange={handleFormSubmit}
                     style={{ display: "none" }}
                   />
-                  <div
-                    onClick={handleValidationChangePhoto}
-                    className="flex flex-row bg-primary w-full px-12 xl:px-24 mt-6 py-4 items-center justify-center rounded-xl cursor-pointer"
-                  >
-                    <MdEdit size={24} className="text-white mr-2" />
-                    <h1 className="text-white text-xl font-semibold text-center">
-                      Ganti Foto
-                    </h1>
-                  </div>
+
+                  {loading ? (
+                    <div
+                      className="flex flex-row bg-gray-300 w-full px-12 xl:px-24 mt-6 py-4 items-center justify-center rounded-xl"
+                    >
+                     <CircularProgress sx={{ color: "#ffffff" }} size={25} />
+                      <h1 className="text-white text-xl font-semibold pl-2">
+                        Loading
+                      </h1>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={handleValidationChangePhoto}
+                      className="flex flex-row bg-primary w-full px-12 xl:px-24 mt-6 py-4 items-center justify-center rounded-xl cursor-pointer"
+                    >
+                      <MdEdit size={24} className="text-white mr-2" />
+                      <h1 className="text-white text-xl font-semibold text-center">
+                        Ganti Foto
+                      </h1>
+                    </div>
+                  )}
                 </form>
               </div>
             ) : (
@@ -339,15 +359,25 @@ export default function Saksi() {
                     onChange={handleFormSubmit}
                     style={{ display: "none" }}
                   />
-                  <div
-                    onClick={handleImageClick}
-                    className="flex flex-row bg-primary px-12 xl:px-24 py-4 items-center justify-center rounded-xl cursor-pointer"
-                  >
-                    <FiUpload size={24} className="text-white mr-3" />
-                    <h1 className="text-white text-xl font-semibold text-center">
-                      Unggah Foto
-                    </h1>
-                  </div>
+
+                  {loading ? (
+                    <div className="flex flex-row bg-gray-300 px-12 xl:px-24 py-4 items-center justify-center rounded-xl">
+                      <CircularProgress sx={{ color: "#ffffff" }} size={25} />
+                      <h1 className="text-white text-xl font-semibold pl-2">
+                        Loading
+                      </h1>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={handleImageClick}
+                      className="flex flex-row bg-primary px-12 xl:px-24 py-4 items-center justify-center rounded-xl cursor-pointer"
+                    >
+                      <FiUpload size={24} className="text-white mr-3" />
+                      <h1 className="text-white text-xl font-semibold text-center">
+                        Unggah Foto
+                      </h1>
+                    </div>
+                  )}
                 </form>
               </div>
             )}

@@ -13,8 +13,7 @@ import Footer from "../../components/Footer";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AlertError } from "../../utils/customAlert";
 import { AlertWarning } from "../../utils/customAlert";
-import HeaderSaksi from '../../components/HeaderSaksi';
-
+import HeaderSaksi from "../../components/HeaderSaksi";
 
 export default function Saksi2() {
   const inputRef = useRef();
@@ -33,8 +32,8 @@ export default function Saksi2() {
   const [paslon4, setPaslon4] = useState(0);
   const [suaraSah, setSuaraSah] = useState(0);
   const [suaraTidakSah, setSuaraTidakSah] = useState(0);
-  const [loading, setLoading] = useState(false)
-  const [previousData, setPreviousData] = useState({})
+  const [loading, setLoading] = useState(false);
+  const [previousData, setPreviousData] = useState({});
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const apiUrlBase = import.meta.env.VITE_API_URL_BASE;
@@ -80,7 +79,6 @@ export default function Saksi2() {
         return response.json();
       })
       .then((data) => {
-
         const dataTPS = data.payload;
         setDataTPS(dataTPS);
 
@@ -102,7 +100,7 @@ export default function Saksi2() {
           paslon4: dataTPS.paslon4,
           suaraTidakSah: dataTPS.suara_tidak_sah,
           photo: dataTPS.photo,
-        })
+        });
 
         setLoadingImage(false);
       })
@@ -153,7 +151,6 @@ export default function Saksi2() {
     setIsModalOpen(true);
   };
 
-
   const handleChangePhoto = (event) => {
     event.preventDefault(); // Mencegah pengiriman formulir default
 
@@ -196,122 +193,140 @@ export default function Saksi2() {
   };
 
   const validateVoteTPS = () => {
-    return suaraSah <= 600 + 600 * 0.02
+    return suaraSah <= 600 + 600 * 0.02;
+  };
+
+  const endpointUpload = (formData, setLoading) => {
+    // Mengirim file ke server
+    fetch(`${apiUrl}/tps/upload`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`, // Ganti dengan token JWT Anda
+      },
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Unauthorized");
+        } else if (response.status === 404) {
+          // Tangani status 401 Unauthorized
+          Swal.fire({
+            title: "Upload Data Gagal",
+            text: "Harap periksa kembali data",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+        // Cek status lainnya
+        if (!response.ok) {
+          throw new Error("Upload Foto Error");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success) {
+          // File is selected, update the image state
+          Swal.fire({
+            title: "Berhasil",
+            text: "Data anda berhasil dikirim",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        } else {
+          Swal.fire({
+            title: "Upload Foto Gagal",
+            text: data.message,
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+
+        if (error.message === "Failed to fetch") {
+          Swal.fire({
+            title: "Upload Data gagal",
+            text: "Jenis File Harus JPG/PNG dan ukuran maksimal 5 MB",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+          });
+        }
+      });
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault(); // Mencegah pengiriman formulir default
 
-    setLoading(true)
-    
+    setLoading(true);
+
     const formData = new FormData();
 
-    const validateVoteTPSValue = validateVoteTPS()
+    const validateVoteTPSValue = validateVoteTPS();
 
-    if(paslon1 === previousData.paslon1 && paslon2 === previousData.paslon2 && paslon3 === previousData.paslon3 && paslon4 === previousData.paslon4 && suaraTidakSah === previousData.suaraTidakSah && dataTPS.photo === previousData.photo){
-      AlertWarning({
-        title: "Tidak Ada Perubahan Data",
-        text: "Harap mengubah data jika ingin melakukan perubahan",
-      });
+    formData.append("paslon1", paslon1);
+    formData.append("paslon2", paslon2);
+    formData.append("paslon3", paslon3);
+    formData.append("paslon4", paslon4);
+    formData.append("suara_sah", suaraSah);
+    formData.append("suara_tidak_sah", suaraTidakSah);
 
-      setLoading(false)
-    }
-    else if ((imageLocal || dataTPS.photo) && validateVoteTPSValue) {
-      if (imageLocal) {
-        formData.append("photo", imageLocal);
-      }
-
-      formData.append("paslon1", paslon1);
-      formData.append("paslon2", paslon2);
-      formData.append("paslon3", paslon3);
-      formData.append("paslon4", paslon4);
-      formData.append("suara_sah", suaraSah);
-      formData.append("suara_tidak_sah", suaraTidakSah);
-
-      // Mengirim file ke server
-      fetch(`${apiUrl}/tps/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${token}`, // Ganti dengan token JWT Anda
-        },
-      })
-        .then((response) => {
-          if (response.status === 401) {
-            throw new Error("Unauthorized");
-          } else if (response.status === 404) {
-            // Tangani status 401 Unauthorized
-            Swal.fire({
-              title: "Upload Data Gagal",
-              text: "Harap periksa kembali data",
-              icon: "error",
-              showConfirmButton: false,
-              timer: 2000,
-            });
-          } 
-          // Cek status lainnya
-          if (!response.ok) {
-            throw new Error("Upload Foto Error");
-          }
-
-          return response.json();
-        })
-        .then((data) => {
-          if (data.success) {
-            // File is selected, update the image state
-            Swal.fire({
-              title: "Berhasil",
-              text: "Data anda berhasil dikirim",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 2000,
-            });
-
-            Cookies.remove("user");
-
-            setTimeout(() => {
-              window.location.reload();
-            }, 2000);
-          } else {
-            Swal.fire({
-              title: "Upload Foto Gagal",
-              text: data.message,
-              icon: "error",
-              showConfirmButton: false,
-              timer: 2000,
-            });
-          }
-
-        setLoading(false)
-
-        })
-        .catch((error) => {
-          if (error.message === "Failed to fetch") {
-            Swal.fire({
-              title: "Upload Data gagal",
-              text: "Jenis File Harus JPG/PNG dan ukuran maksimal 5 MB",
-              icon: "error",
-              showConfirmButton: false,
-              timer: 2000,
-            });
-          }
-
-        setLoading(false)
-
+    if (
+      paslon1 === previousData.paslon1 &&
+      paslon2 === previousData.paslon2 &&
+      paslon3 === previousData.paslon3 &&
+      paslon4 === previousData.paslon4 &&
+      suaraTidakSah === previousData.suaraTidakSah
+    ) {
+      if (
+        (imageLocal || dataTPS.photo !== previousData.photo) &&
+        validateVoteTPSValue
+      ) {
+        if (imageLocal) {
+          formData.append("photo", imageLocal);
+        }
+        // upload data
+        endpointUpload(formData, setLoading);
+      } else {
+        AlertWarning({
+          title: "Tidak Ada Perubahan Data",
+          text: "Harap mengubah data jika ingin melakukan perubahan",
         });
 
-    } else if (!validateVoteTPSValue){
+        setLoading(false);
+      }
+    } else if (!validateVoteTPSValue) {
+      setLoading(false);
       AlertWarning({
         title: "Suara Melebihi Ketentuan TPS",
         text: "Harap periksa kembali data suara paslon",
       });
-      setLoading(false)
+    } else if (
+      paslon1 !== previousData.paslon1 ||
+      paslon2 !== previousData.paslon2 ||
+      paslon3 !== previousData.paslon3 ||
+      paslon4 !== previousData.paslon4 ||
+      suaraTidakSah === previousData.suaraTidakSah
+    ) {
+      // upload data
+      endpointUpload(formData, setLoading);
     } else {
+      setLoading(false);
       AlertWarning({
         title: "Data Belum Lengkap",
         text: "Harap Mengisi data secara lengkap beserta Form C1",
       });
-      setLoading(false)
     }
   };
 
@@ -407,9 +422,7 @@ export default function Saksi2() {
       <div className="flex flex-col w-full h-full justify-between">
         <form id="dataTPSForm" encType="multipart/form-data">
           <div className="flex flex-col">
-
             <HeaderSaksi user={dataTPS} />
-            
 
             <div className="flex flex-col w-full bg-gray-100 px-12">
               <h1 className="text-2xl xl:text-3xl font-semibold text-center pt-8">
@@ -533,7 +546,8 @@ export default function Saksi2() {
                         onChange={handleChangePhoto}
                         style={{ display: "none" }}
                       />
-                      <div
+                     
+                     <div
                         onClick={handleImageClick}
                         className="flex flex-row border-[2px] border-primary px-12 xl:px-24 py-4 items-center justify-center rounded-xl cursor-pointer"
                       >
@@ -549,22 +563,20 @@ export default function Saksi2() {
             </div>
           </div>
 
-          
-          <div
-            className="flex flex-row w-full justify-center px-8 py-2 md:py-4"
-            onClick={handleFormSubmit}
-          >
+          <div className="flex flex-row w-full justify-center px-8 py-2 md:py-4">
             {loading ? (
-            <div className="flex flex-row bg-gray-300 py-4 w-full md:w-auto md:px-24 justify-center rounded-xl cursor-pointer">
-               <CircularProgress sx={{ color: "#ffffff" }} size={25} />
-               <h1 className="text-white font-bold text-lg pl-2">Loading</h1>
-            </div>
+              <div className="flex flex-row bg-gray-300 py-4 w-full md:w-auto md:px-24 justify-center rounded-xl">
+                <CircularProgress sx={{ color: "#ffffff" }} size={25} />
+                <h1 className="text-white font-bold text-lg pl-2">Loading</h1>
+              </div>
             ) : (
-            <div className="flex flex-row bg-primary py-4 w-full md:w-auto md:px-24 justify-center rounded-xl cursor-pointer">
-              <FiSave size={25} className="text-white" />
-              <h1 className="pl-4 text-white text-xl font-medium">Simpan</h1>
-            </div>
-
+              <div
+                className="flex flex-row bg-primary py-4 w-full md:w-auto md:px-24 justify-center rounded-xl cursor-pointer"
+                onClick={handleFormSubmit}
+              >
+                <FiSave size={25} className="text-white" />
+                <h1 className="pl-4 text-white text-xl font-medium">Simpan</h1>
+              </div>
             )}
           </div>
 

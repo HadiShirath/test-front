@@ -18,7 +18,6 @@ import { useRef, useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
-import Swal from "sweetalert2";
 import { IoDocumentText } from "react-icons/io5";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
@@ -71,7 +70,7 @@ export default function Kecamatan() {
       setUserDetail(user);
 
       if (data.role !== "user") {
-        clearAllCookies()
+        clearAllCookies();
         navigate(`/login`);
       }
     } else {
@@ -93,7 +92,13 @@ export default function Kecamatan() {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setData(data.payload);
 
@@ -113,15 +118,12 @@ export default function Kecamatan() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -138,20 +140,6 @@ export default function Kecamatan() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
       });
   }, [navigate, kecamatan, kelurahan, tps, currentPath, apiUrl]);
 
@@ -268,11 +256,8 @@ export default function Kecamatan() {
             <h1 className="text-white text-lg">Tampilkan Tabel Suara </h1>
           </div>
         </div>
-
-       
       </div>
 
-     
       <RunningText
         totalSuara={allVotes.total_suara}
         persentase={allVotes.persentase}

@@ -17,6 +17,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TableHead from "@mui/material/TableHead";
+import Tooltip from '@mui/material/Tooltip';
 
 function TablePaginationActions(props) {
   const theme = useTheme();
@@ -98,23 +99,27 @@ export default function TableListMessage({ data, inbox, outbox }) {
   function createDataOutbox(
     id,
     number_phone,
+    number_phones,
     message,
     processed,
     created_at,
     updated_at
   ) {
-    return { id, number_phone, message, processed, created_at, updated_at };
+    return { id, number_phone, number_phones, message, processed, created_at, updated_at };
   }
+
+
 
   const rows = inbox
     ? data.map(({ id, sender_number, message, created_at, updated_at }) =>
         createData(id, sender_number, message, created_at, updated_at)
       )
     : data.map(
-        ({ id, receiver_number, message, processed, created_at, updated_at }) =>
+        ({ id, receiver_number, receiver_numbers, message, processed, created_at, updated_at }) =>
           createDataOutbox(
             id,
             receiver_number,
+            receiver_numbers,
             message,
             processed,
             created_at,
@@ -122,16 +127,39 @@ export default function TableListMessage({ data, inbox, outbox }) {
           )
       );
 
+      const styleSelect = {
+        "& .MuiTooltip-tooltip": {
+          fontFamily: "sans-serif",
+          backgroundColor: "#ffffff"
+        },
+      };
+
   const tableFirst = (value) => {
+    var newValue;
+
+    if (Array.isArray(value)) {
+      newValue = value.join(", ")
+  } else {
+      newValue = value
+  }
     return (
+      <Tooltip title={Array.isArray(value) ? newValue : ""} arrow sx={styleSelect}>
       <TableCell
         component="th"
         scope="row"
-        sx={{ fontFamily: "sans-serif", fontSize: 16 }}
-        className="cursor-pointer w-[20%]"
+        sx={{
+          fontFamily: "sans-serif",
+          fontSize: 16,
+          whiteSpace: "nowrap",        
+          overflow: "hidden",         
+          textOverflow: "ellipsis",   
+          maxWidth: "200px",          
+      }}
+        className="cursor-pointer"
       >
-        {value}
+        {newValue}
       </TableCell>
+      </Tooltip>
     );
   };
 
@@ -259,7 +287,8 @@ export default function TableListMessage({ data, inbox, outbox }) {
           {(rowsPerPage > 0
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
-          ).map((row, index) => (
+          ).map((row, index) => {
+            return (
             <TableRow
               key={page * rowsPerPage + index}
               sx={{
@@ -269,13 +298,14 @@ export default function TableListMessage({ data, inbox, outbox }) {
               }}
             >
               {tableNumber(page * rowsPerPage + index + 1)}
-              {tableFirst(row.number_phone)}
+              {tableFirst(row.number_phone !== "" ? row.number_phone : row.number_phones)}
               {tableCell(row.message)}
               {tableTime(row.created_at)}
               {inbox && tableStatus()}
               {outbox && tableStatusOutbox(row.processed)}
             </TableRow>
-          ))}
+          )})}
+          
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={6} />

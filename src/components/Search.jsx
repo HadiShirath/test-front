@@ -147,7 +147,7 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
               {!valueKecamatan ? (
                 <Label name="Pilih Kecamatan" />
               ) : (
-                <div
+                <div 
                   className="absolute right-8 top-5 px-2 z-10 text-gray-500 cursor-pointer"
                   onClick={handleRemoveKecamatan}
                 >

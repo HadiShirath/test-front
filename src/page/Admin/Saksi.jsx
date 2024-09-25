@@ -3,9 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { parseToken } from "../../utils/parseToken";
 import Cookies from "js-cookie";
-import { calculatePercentages } from "../../utils/countPercentage";
 import Swal from "sweetalert2";
-import CandidateVotes from "../../components/CandidateVotes";
 import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import HeaderAdmin from "../../components/HeaderAdmin";
@@ -25,8 +23,6 @@ export default function Saksi() {
   const { kecamatan, kelurahan, tps } = useParams();
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
-  const [dataVoter, setDataVoter] = useState({});
-  const [percentage, setPercentage] = useState([]);
   const [isOpenModalSaksi, setIsOpenModalSaksi] = useState(false);
   const [nameKoordinator, setNameKoordinator] = useState("");
   const [hpKoordinator, setHpKoordinator] = useState("");
@@ -68,43 +64,6 @@ export default function Saksi() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/tps/voter/all`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.status === 401) {
-          throw new Error("Sesi Anda Berakhir");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        const dataVoter = data.payload;
-
-        const dataset = [
-          dataVoter.paslon1,
-          dataVoter.paslon2,
-          dataVoter.paslon3,
-          dataVoter.paslon4,
-          dataVoter.suara_tidak_sah,
-        ];
-
-        // percentage paslon tanpa suara tidak sah
-        const percentages = calculatePercentages(dataset.slice(0, 4));
-
-        setDataVoter(dataset);
-        setPercentage(percentages);
-      })
-      .catch((error) => {
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
-      });
-
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
       headers: {
@@ -120,8 +79,7 @@ export default function Saksi() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-     
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
@@ -172,7 +130,7 @@ export default function Saksi() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`${apiUrl}/user/${userId}`, {
+      fetch(`${apiUrl}/users/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -353,8 +311,7 @@ export default function Saksi() {
               />
             </div>
           </div>
-
-          <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
+            
 
           <div className="flex flex-row w-full justify-center px-8 pt-6">
             <div className="flex flex-col w-full md:w-auto">

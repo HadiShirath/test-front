@@ -130,12 +130,12 @@ export default function Login() {
           <h1 className="text-2xl md:text-4xl">KamarHitung.id</h1>
 
           <div className="text-2xl md:text-5xl font-semibold">
-            <h1>Real Quick Count Pemilihan</h1>
+            {/* <h1>Real Quick Count Pemilihan</h1>
             <h1>Bupati & Wakil Bupati</h1>
-            <h1>Kabupaten Aceh Besar</h1>
-            {/* <h1>Lorem ipsum dolor sit amet</h1>
+            <h1>Kabupaten Aceh Besar</h1> */}
+            <h1>Lorem ipsum dolor sit amet</h1>
             <h1>consectetur adipiscing elit</h1>
-            <h2>sed do eiusmod tempor</h2> */}
+            <h2>sed do eiusmod tempor</h2>
           </div>
 
           <div className="xl:flex hidden pt-20">
@@ -177,7 +177,7 @@ export default function Login() {
             </div>
 
             {loading ? (
-              <div className="w-full flex flex-row justify-center  bg-gray-300 py-4 items-center rounded-xl cursor-pointer">
+              <div className="w-full flex flex-row justify-center  bg-gray-300 py-4 items-center rounded-xl">
                 <CircularProgress sx={{ color: "#ffffff" }} size={25} />
                 <h1 className="text-white text-xl font-semibold pl-2">
                   Loading

@@ -18,7 +18,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
-import Swal from "sweetalert2";
 import { IoDocumentText } from "react-icons/io5";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
@@ -26,8 +25,7 @@ import CandidateVotes from "../../components/CandidateVotes";
 import { calculatePercentages } from "../../utils/countPercentage";
 import { clearAllCookies } from "../../utils/cookies";
 import { AlertError } from "../../utils/customAlert";
-import { formatChartData, formatPieData } from '../../data/formatDataChart';
-
+import { formatChartData, formatPieData } from "../../data/formatDataChart";
 
 // Register komponen Chart.js yang diperlukan
 ChartJS.register(
@@ -54,8 +52,8 @@ export default function TPS() {
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  const chartData = formatChartData(data); 
-  const pieData = formatPieData(data);  
+  const chartData = formatChartData(data);
+  const pieData = formatPieData(data);
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -88,7 +86,13 @@ export default function TPS() {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setData(data.payload);
 
@@ -108,15 +112,12 @@ export default function TPS() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -133,23 +134,9 @@ export default function TPS() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
       });
   }, [navigate, kecamatan, kelurahan, tps, currentURL, apiUrl]);
- 
+
   const handleToPagePhoto = (event) => {
     event.preventDefault();
     navigate(`${currentURL}/photo`);
@@ -240,8 +227,6 @@ export default function TPS() {
         </div>
 
         <div className="hidden md:flex flex-row w-full items-center justify-center pt-8 gap-2 px-4">
-          
-
           <div
             className="hidden md:flex flex-row border-primary border-[3px] py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
             onClick={handleToPagePhoto}
@@ -262,11 +247,8 @@ export default function TPS() {
             <h1 className="text-primary text-lg">Foto Form C1</h1>
           </div>
         </div>
-
-       
       </div>
 
-      
       <RunningText
         totalSuara={allVotes.total_suara}
         persentase={allVotes.persentase}

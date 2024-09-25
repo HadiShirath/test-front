@@ -108,7 +108,7 @@ export default function TableKelurahan() {
 
         setDataVoter(dataset);
         setPercentage(percentages);
-      })
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -125,8 +125,7 @@ export default function TableKelurahan() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
@@ -176,9 +175,8 @@ export default function TableKelurahan() {
                 kelurahan
               />
             </div>
+            <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
           </div>
-
-          <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
           <div className="flex flex-row w-full justify-center px-8 pt-6">
             <div className="flex flex-col w-full md:w-auto">

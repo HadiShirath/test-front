@@ -16,7 +16,6 @@ import Header from "../../components/Header";
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
-import Swal from "sweetalert2";
 import Footer from "../../components/Footer";
 import { calculatePercentages } from "../../utils/countPercentage";
 import CandidateVotes from "../../components/CandidateVotes";
@@ -80,19 +79,22 @@ export default function Table() {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setListKecamatan(data.payload);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/tps/voter/all`, {
       method: "GET",
@@ -117,16 +119,7 @@ export default function Table() {
 
         setDataVoter(dataset);
         setPercentage(percentages);
-      })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -143,20 +136,6 @@ export default function Table() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) => {
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        });
-
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
       });
   }, [navigate, apiUrl]);
 
@@ -223,7 +202,6 @@ export default function Table() {
           >
             <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
           </div>
-          
         </div>
 
         <div className="md:hidden flex flex-col w-full">
@@ -235,7 +213,6 @@ export default function Table() {
               <h1 className="text-white text-lg">Tampilkan Bentuk Grafik</h1>
             </div>
           </div>
-
         </div>
       </div>
 

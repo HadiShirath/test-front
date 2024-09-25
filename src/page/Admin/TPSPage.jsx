@@ -3,9 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { parseToken } from "../../utils/parseToken";
 import Cookies from "js-cookie";
-import { calculatePercentages } from "../../utils/countPercentage";
 import Swal from "sweetalert2";
-import CandidateVotes from "../../components/CandidateVotes";
 import Footer from "../../components/Footer";
 import RunningText from "../../components/RunningText";
 import HeaderAdmin from "../../components/HeaderAdmin";
@@ -23,8 +21,6 @@ export default function TPS() {
   const { kecamatan, kelurahan, tps } = useParams();
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
-  const [dataVoter, setDataVoter] = useState({});
-  const [percentage, setPercentage] = useState([]);
   const [validateUpdateData, setValidateUpdateData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [listDataTPS, setListDataTPS] = useState([]);
@@ -72,43 +68,6 @@ export default function TPS() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/tps/voter/all`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (response.status === 401) {
-          throw new Error("Sesi Anda Berakhir");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        const dataVoter = data.payload;
-
-        const dataset = [
-          dataVoter.paslon1,
-          dataVoter.paslon2,
-          dataVoter.paslon3,
-          dataVoter.paslon4,
-          dataVoter.suara_tidak_sah,
-        ];
-
-        // percentage paslon tanpa suara tidak sah
-        const percentages = calculatePercentages(dataset.slice(0, 4));
-
-        setDataVoter(dataset);
-        setPercentage(percentages);
-      })
-      .catch((error) => {
-        if (error.message === "Sesi Anda Berakhir") {
-          clearAllCookies();
-          navigate("/login");
-        }
-      });
-
     fetch(`${apiUrl}/tps/all`, {
       method: "GET",
       headers: {
@@ -142,7 +101,6 @@ export default function TPS() {
       .then((data) => {
         setAllVotes(data.payload);
       });
-      
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handlePrint = useReactToPrint({
@@ -511,9 +469,8 @@ export default function TPS() {
                   setSuaraTidakSah={setSuaraTidakSah}
                 />
               </div>
-            </div>
 
-            <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
+            </div>
 
             <div className="flex flex-row w-full justify-center px-8 pt-6">
               <div className="flex flex-col w-full md:w-auto">

@@ -4,7 +4,6 @@ import { useRef, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { parseToken } from "../../utils/parseToken";
-import Swal from "sweetalert2";
 import ModalPhoto from "../../components/atoms/ModalPhoto";
 import Header from "../../components/Header";
 import Breadcrumbs from "../../components/Breadcrumbs";
@@ -53,19 +52,22 @@ export default function Home() {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
       .then((data) => {
         setData(data.payload);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -76,16 +78,7 @@ export default function Home() {
       .then((response) => response.json())
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const componentRef = useRef();

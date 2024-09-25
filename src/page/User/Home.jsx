@@ -83,7 +83,13 @@ export default function Home() {
         Authorization: `Bearer ${token}`,
       },
     })
-      .then((response) => response.json())
+    .then((response) => {
+      if (response.status === 401) {
+        throw new Error("Sesi Anda Berakhir");
+      }
+
+      return response.json();
+    })
       .then((data) => {
         setData(data.payload);
 
@@ -103,15 +109,12 @@ export default function Home() {
         setDataVoter(dataset);
         setPercentage(percentages);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -129,15 +132,6 @@ export default function Home() {
       .then((data) => {
         setAllVotes(data.payload);
       })
-      .catch((error) =>
-        AlertError({
-          title:
-            error.message === "Sesi Anda Berakhir"
-              ? "Waktu Habis"
-              : "Terjadi Kesalahan",
-          text: error.message,
-        })
-      );
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const componentRef = useRef();

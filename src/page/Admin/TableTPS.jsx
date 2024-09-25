@@ -20,8 +20,7 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import { AlertError } from "../../utils/customAlert";
 import { MdLocalPrintshop } from "react-icons/md";
 import { useReactToPrint } from "react-to-print";
-import { clearAllCookies } from '../../utils/cookies';
-
+import { clearAllCookies } from "../../utils/cookies";
 
 export default function TableTPS() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -115,7 +114,7 @@ export default function TableTPS() {
 
         setDataVoter(dataset);
         setPercentage(percentages);
-      })
+      });
 
     fetch(`${apiUrl}/kecamatan`, {
       method: "GET",
@@ -132,8 +131,7 @@ export default function TableTPS() {
       })
       .then((data) => {
         setAllVotes(data.payload);
-      })
-      
+      });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
   const handleCloseModal = () => {
@@ -180,7 +178,7 @@ export default function TableTPS() {
 
       const userId = isOpenModalSaksi.user_id;
 
-      fetch(`${apiUrl}/user/${userId}`, {
+      fetch(`${apiUrl}/users/${userId}`, {
         method: "PUT",
         body: JSON.stringify(data),
         headers: {
@@ -375,9 +373,8 @@ export default function TableTPS() {
                 navigateAdmin
               />
             </div>
+            <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
           </div>
-
-          <CandidateVotes percentage={percentage} dataVoter={dataVoter} />
 
           <div className="flex flex-row w-full justify-center px-8 pt-6">
             <div className="flex flex-col w-full md:w-auto">
