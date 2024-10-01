@@ -4,24 +4,18 @@ import { useParams, useNavigate } from "react-router-dom";
 import { parseToken } from "../../utils/parseToken";
 import Cookies from "js-cookie";
 import Footer from "../../components/Footer";
-import RunningText from "../../components/RunningText";
 import HeaderAdmin from "../../components/HeaderAdmin";
 import { AlertError } from "../../utils/customAlert";
 import { clearAllCookies } from "../../utils/cookies";
-import TableListMessage from "../../components/TableListMessage";
-import { HiMail } from "react-icons/hi";
-import { MdRefresh } from "react-icons/md";
 
-export default function Inbox() {
+export default function Profile() {
   const { kecamatan, kelurahan, tps } = useParams();
   const [expanded, setExpanded] = useState(true);
   const navigate = useNavigate();
-  const [userDetail, setUserDetail] = useState("");
   const [allVotes, setAllVotes] = useState("");
-  const [dataMessage, setDataMessage] = useState([]);
+  const [userDetail, setUserDetail] = useState("");
 
   const apiUrl = import.meta.env.VITE_API_URL;
-  const token = Cookies.get("access_token");
 
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -72,32 +66,6 @@ export default function Inbox() {
       });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
-  useEffect(() => {
-    fetch(`${apiUrl}/messages/inbox`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setDataMessage(data.payload);
-      });
-  }, [token, apiUrl]);
-
-  const handleRefresh = () => {
-    fetch(`${apiUrl}/messages/inbox`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setDataMessage(data.payload);
-      });
-  };
-
   return (
     <div className="flex flex-row h-full w-full relative">
       <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />
@@ -113,56 +81,54 @@ export default function Inbox() {
           <HeaderAdmin
             expanded={expanded}
             setExpanded={setExpanded}
-            title="Pesan Masuk"
+            title="Profile"
             user={userDetail}
             allVotes={allVotes}
           />
 
           <div className="flex pr-4"></div>
 
-          <div className="px-6 pt-8">
-            <div className="flex flex-row w-full items-center justify-between">
-              <div className="flex flex-row">
-                <HiMail size={60} className="text-yellow-500 mr-3" />
-
-                <div className="flex flex-col">
-                  <h1 className="text-2xl font-semibold text-primary">
-                    Data Pesan SMS Masuk
+          <div className="px-6 pr-8 pt-8">
+            <div className="flex flex-row w-full justify-between items-center">
+              <div className="flex flex-row items-center bg-white py-8 px-12 rounded-3xl shadow-xl">
+                <div className="border-[4px] border-primary rounded-full">
+                  <img
+                    src="/images/profile.jpg"
+                    alt=""
+                    className="w-36 rounded-full p-2"
+                  />
+                </div>
+                <div className="flex flex-col pl-4">
+                  <h1 className="text-2xl xl:text-4xl font-semibold text-primary">
+                    Admin Kamar Hitung
                   </h1>
-                  <h1 className="text-2xl xl:text-3xl font-semibold">
-                    Kamar Hitung
-                  </h1>
+                  <h1 className="text-xl xl:text-3xl font-semibold">Admin</h1>
                 </div>
               </div>
+            </div>
 
-              <div
-                className="relative hidden md:flex flex-col items-center justify-center rounded-full hover:bg-gray-100 w-12 h-12 cursor-pointer group"
-                onClick={handleRefresh}
-              >
-                <MdRefresh size={35} className="text-gray-500" />
-                <span className="absolute left-[-4.5rem] text-lg text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Refresh
-                </span>
+            <div className="pt-8 xl:pr-24">
+              <h1 className="text-2xl text-gray-400">Profile Information</h1>
+              <h1 className="xl:text-xl pt-4">
+                Memiliki tanggung jawab dalam memproses Website Real Quick Count dilengkapi dengan berbagai fitur untuk
+                mendukung proses pemungutan suara yang efektif dan transparan.
+                Fitur utamanya mencakup kemampuan untuk menghitung suara
+                berdasarkan kecamatan, kelurahan, dan TPS, serta opsi untuk
+                mencetak hasil suara dalam format PDF, mengimpor
+                data dari file CSV dan mengekspor hasil suara ke dalam bentuk tabel, sehingga memudahkan analisis. Selain itu, admin dapat
+                mengedit data suara dan memperbarui profil saksi, serta
+                mengelola komunikasi melalui SMS, termasuk pesan masuk dan
+                keluar.
+              </h1>
+
+              <div className="pt-10">
+                <h1 className="xl:text-xl">Email : -</h1>
+                <h1 className="xl:text-xl">Username : admin</h1>
+                <h1 className="xl:text-xl">Location : Banda Aceh, Indonesia</h1>
               </div>
-            </div>
-
-            <div
-              className="relative md:hidden flex flex-row items-center justify-center rounded-xl mt-4 py-3 bg-gray-100 cursor-pointer group"
-              onClick={handleRefresh}
-            >
-              <MdRefresh size={35} className="text-gray-500" />
-              <h1 className="text-xl text-gray-600 pl-2">Refresh</h1>
-            </div>
-
-            <div className="flex flex-col w-full pt-6">
-              <TableListMessage data={dataMessage ? dataMessage : []} inbox />
             </div>
           </div>
 
-          <RunningText
-            totalSuara={allVotes.total_suara}
-            persentase={allVotes.persentase}
-          />
           <Footer />
         </div>
       </div>

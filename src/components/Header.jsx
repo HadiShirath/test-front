@@ -167,7 +167,7 @@ export default function Header({ user }) {
             <h2 className="text-xl md:text-4xl font-semibold">
               Bupati & Wakil Bupati
             </h2>
-            <h2 className="text-xl md:text-3xl ">Kabupaten Aceh Besar</h2>
+            <h2 className="text-xl md:text-3xl ">Kota Banda Aceh</h2>
 
             {/* <h2 className="text-xl md:text-4xl font-semibold">
             Lorem ipsum dolor sit amet

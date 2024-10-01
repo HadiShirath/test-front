@@ -18,6 +18,8 @@ import { AlertError } from "../../utils/customAlert";
 import { clearAllCookies } from "../../utils/cookies";
 import { MdLocalPrintshop } from "react-icons/md";
 import { useReactToPrint } from "react-to-print";
+import { FiDownload } from "react-icons/fi";
+import { CSVLink } from "react-csv";
 
 export default function Saksi() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -32,11 +34,11 @@ export default function Saksi() {
   const [loading, setLoading] = useState(false);
   const [userDetail, setUserDetail] = useState("");
   const [allVotes, setAllVotes] = useState("");
+  const [dataExport, setDataExport] = useState([]);
 
   const componentRef = useRef();
 
   const apiUrl = import.meta.env.VITE_API_URL;
-
   const token = Cookies.get("access_token");
 
   useEffect(() => {
@@ -64,7 +66,7 @@ export default function Saksi() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -79,6 +81,29 @@ export default function Saksi() {
       })
       .then((data) => {
         setAllVotes(data.payload);
+      })
+      .catch((error) => {
+        if (error.message === "Sesi Anda Berakhir") {
+          clearAllCookies();
+          navigate("/login");
+        }
+      });
+
+    fetch(`${apiUrl}/users/csv`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error("Sesi Anda Berakhir");
+        }
+
+        return response.json();
+      })
+      .then((data) => {
+        setDataExport(data.payload);
       });
   }, [navigate, kecamatan, kelurahan, tps, apiUrl]);
 
@@ -166,6 +191,16 @@ export default function Saksi() {
         );
     }
   };
+
+  const headersExport = [
+    { label: "Kecamatan", key: "kecamatan_name" },
+    { label: "Kelurahan", key: "kelurahan_name" },
+    { label: "TPS", key: "tps_name" },
+    { label: "Nama", key: "fullname" },
+    { label: "Nomor HP", key: "username" },
+    { label: "Password", key: "password_decoded" },
+    { label: "Kode Unik", key: "code_unique" },
+  ];
 
   return (
     <div className="flex flex-row h-full w-full relative">
@@ -289,7 +324,7 @@ export default function Saksi() {
             setExpanded={setExpanded}
             title="Saksi"
             user={userDetail}
-            allVotes={allVotes}
+            allVotes={allVotes ? allVotes : []}
           />
 
           <div className="flex pr-4"></div>
@@ -299,7 +334,7 @@ export default function Saksi() {
               <h1 className="text-2xl font-semibold text-primary">
                 Data Informasi Saksi
               </h1>
-              <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
+              <h1 className="text-3xl font-semibold">Kota Banda Aceh</h1>
             </div>
 
             <div className="flex flex-col w-full px-6 pt-6">
@@ -311,9 +346,8 @@ export default function Saksi() {
               />
             </div>
           </div>
-            
 
-          <div className="flex flex-row w-full justify-center px-8 pt-6">
+          <div className="flex md:flex-row flex-col w-full justify-center px-8 pt-6 gap-4">
             <div className="flex flex-col w-full md:w-auto">
               <div
                 className="border-[2px] px-12 cursor-pointer border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2"
@@ -323,11 +357,24 @@ export default function Saksi() {
                 <h1 className="text-primary text-lg">Cetak</h1>
               </div>
             </div>
+
+              <div className="flex flex-col w-full md:w-auto">
+            <CSVLink
+              data={dataExport}
+              headers={headersExport}
+              filename={"kamarhitung-saksi.csv"}
+            >
+                <div className="border-[2px] px-12 cursor-pointer border-primary py-3 flex flex-row w-full justify-center rounded-xl gap-2">
+                  <FiDownload size={24} className="text-primary" />
+                  <h1 className="text-primary text-lg">Download CSV</h1>
+                </div>
+            </CSVLink>
+              </div>
           </div>
 
           <RunningText
-            totalSuara={allVotes.total_suara}
-            persentase={allVotes.persentase}
+            totalSuara={allVotes ? allVotes.total_suara : 0}
+            persentase={allVotes ? allVotes.persentase : 0}
           />
           <Footer />
         </div>

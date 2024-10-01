@@ -72,7 +72,7 @@ export default function TableTPS() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/kelurahan/${kelurahan}`, {
+    fetch(`${apiUrl}/kelurahan/${kelurahan}/detail`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -116,7 +116,7 @@ export default function TableTPS() {
         setPercentage(percentages);
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

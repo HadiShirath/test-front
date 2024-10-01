@@ -85,7 +85,7 @@ export default function TPS() {
         setListDataTPS(data.payload);
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -439,7 +439,7 @@ export default function TPS() {
               setExpanded={setExpanded}
               title="TPS"
               user={userDetail}
-              allVotes={allVotes}
+              allVotes={allVotes ? allVotes : []}
             />
 
             <div className="flex pr-4"></div>
@@ -449,7 +449,7 @@ export default function TPS() {
                 <h1 className="text-2xl font-semibold text-primary">
                   Data Informasi TPS
                 </h1>
-                <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
+                <h1 className="text-3xl font-semibold">Kota Banda Aceh</h1>
               </div>
 
               <div className="flex flex-col w-full px-6 pt-6">
@@ -485,8 +485,8 @@ export default function TPS() {
             </div>
 
             <RunningText
-              totalSuara={allVotes.total_suara}
-              persentase={allVotes.persentase}
+              totalSuara={allVotes ? allVotes.total_suara : 0}
+              persentase={allVotes ? allVotes.persentase : 0}
             />
             <Footer />
           </div>

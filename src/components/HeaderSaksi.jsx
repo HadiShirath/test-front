@@ -165,10 +165,10 @@ export default function HeaderSaksi({ user }) {
           </h1>
 
           <h1 className="text-2xl xl:text-3xl">
-            Pemilihan Bupati & Wakil Bupati
+            Pemilihan Walikota & Wakil Walikota
           </h1>
           <h1 className="text-2xl xl:text-3xl text-semibold ">
-            Kabupaten Aceh Besar
+            Kota Banda Aceh
           </h1>
         </div>
 

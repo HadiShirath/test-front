@@ -69,7 +69,7 @@ export default function Home() {
         }
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

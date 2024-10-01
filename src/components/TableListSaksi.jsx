@@ -219,7 +219,7 @@ export default function TableListSaksi({
         component="th"
         scope="row"
         sx={{ fontFamily: "sans-serif", fontSize: 16 }}
-        className="cursor-pointer "
+        className="cursor-pointer"
         align="center"
         onClick={() => {
           const data = {

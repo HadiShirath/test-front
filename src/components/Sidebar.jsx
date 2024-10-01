@@ -46,6 +46,7 @@ export default function Sidebar({ setExpanded, expanded }) {
         <SidebarItem
           icon={<FaUser size={18} className="text-green-500" />}
           text="Profile"
+           path="/admin/profile"
         />
       </SidebarContainer>
     </div>
@@ -63,27 +64,20 @@ export function SidebarContainer({ children, expanded }) {
         <div
           className={`${
             expanded ? "px-8" : "px-4"
-          } p-6 pb-10 pt-6 transition-all duration-300  flex flex-row items-center`}
+          } p-6 pb-10 pt-10 transition-all duration-300 flex flex-row items-center`}
         >
-          {/* <img
-            src="https://img.logoipsum.com/243.svg"
-            className={`overflow-hidden transition-all ${
-              expanded ? "w-full" : "w-0"
-            }`}
-            alt=""
-          />         */}
           <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
+            src="/images/kamar-hitung.png"
             alt=""
-            className="w-12 h-12  rounded-xl"
+            className="w-12"
           />
 
           <h1
             className={`${
               expanded ? "w-52" : "w-0"
-            } ml-3 overflow-hidden text-lg`}
+            } ml-3 overflow-hidden text-xl font-semibold`}
           >
-            KamarHitung.id
+            KamarHitung
           </h1>
         </div>
 
@@ -135,6 +129,8 @@ export function SidebarItem({ icon, text, path, alert }) {
       navigate("/admin/tps");
     } else if (text === "Tabel") {
       navigate("/admin/table");
+    } else if (text === "Profile") {
+      navigate("/admin/profile");
     }
   };
 

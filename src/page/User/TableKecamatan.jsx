@@ -121,7 +121,7 @@ export default function Table() {
         setPercentage(percentages);
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -165,7 +165,7 @@ export default function Table() {
               Tabel Perolehan Suara
             </h1>
             <h1 className="text-2xl xl:text-4xl font-semibold">
-              Kabupaten Aceh Besar
+              Kota Banda Aceh
             </h1>
           </div>
 

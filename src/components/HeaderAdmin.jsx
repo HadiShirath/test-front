@@ -13,6 +13,7 @@ import { slideInFromBottom, sideBar } from "../utils/motion.js";
 import { FaChevronRight } from "react-icons/fa6";
 import { FaDesktop, FaTable, FaVoteYea, FaUsers } from "react-icons/fa";
 import { clearAllCookies } from '../utils/cookies';
+import { HiMail, HiMailOpen } from "react-icons/hi";
 
 export default function HeaderAdmin({
   setExpanded,
@@ -148,12 +149,36 @@ export default function HeaderAdmin({
 
                 <motion.div
                   variants={slideInFromBottom(0.5)}
-                  className="pt-2 pb-8 flex flex-col w-full px-10 items-start"
+                  className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
                 >
                   <a href="/admin/saksi">
                     <div className="flex flex-row items-center">
                       <FaUsers size={20} className="text-violet-500" />
                       <h1 className="pl-2">Saksi</h1>
+                    </div>
+                  </a>
+                </motion.div>
+
+                <motion.div
+                  variants={slideInFromBottom(0.5)}
+                  className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
+                >
+                  <a href="/admin/inbox">
+                    <div className="flex flex-row items-center">
+                    <HiMail size={20} className="text-yellow-500" />
+                      <h1 className="pl-2">Pesan Masuk</h1>
+                    </div>
+                  </a>
+                </motion.div>
+
+                <motion.div
+                  variants={slideInFromBottom(0.5)}
+                  className="pt-2 pb-8 flex flex-col w-full px-10 items-start"
+                >
+                  <a href="/admin/outbox">
+                    <div className="flex flex-row items-center">
+                    <HiMailOpen size={20} className="text-red-500" />
+                      <h1 className="pl-2">Pesan Keluar</h1>
                     </div>
                   </a>
                 </motion.div>
@@ -228,10 +253,10 @@ export default function HeaderAdmin({
           <h1 className="text-xl text-white">
             Real Quick Count Pemilihan Bupati & Wakil Bupati
           </h1>
-          <h1 className="text-xl text-white ">Kabupaten Aceh Besar</h1>
+          <h1 className="text-xl text-white ">Kota Banda Aceh</h1>
         </div>
 
-        <div className="hidden xl:flex flex-col w-full justify-between items-end pr-6">
+        <div className="hidden xl:flex flex-col w-full justify-between z-[1] items-end pr-6">
           <Dropdown
             trigger={
               <div className="flex flex-col bg-gray-600 rounded-full w-16">

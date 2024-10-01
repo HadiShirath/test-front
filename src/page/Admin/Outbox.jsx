@@ -20,6 +20,7 @@ import Swal from "sweetalert2";
 import { AlertWarning } from "../../utils/customAlert";
 import MultipleSelectChip from "../../components/atoms/MultipleSelectChip";
 import { MdOutgoingMail, MdRefresh } from "react-icons/md";
+import { Checkbox } from "@mui/material";
 
 export default function Outbox() {
   const { kecamatan, kelurahan, tps } = useParams();
@@ -33,6 +34,8 @@ export default function Outbox() {
   const [receiverNumber, setReceiverNumber] = useState([]);
   const [message, setMessage] = useState("");
   const [listNumber, setListNumber] = useState([]);
+  const [isNumberKecamatan, setIsNumberKecamatan] = useState(false);
+  const [personName, setPersonName] = useState([]);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = Cookies.get("access_token");
@@ -62,7 +65,7 @@ export default function Outbox() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -111,9 +114,14 @@ export default function Outbox() {
   }, [token, apiUrl]);
 
   const handleCloseModal = () => {
-    setReceiverNumber("");
-    setMessage("");
+    handleRemoveData()
     setIsOpenModalEdit(!isOpenModalEdit);
+  };
+
+  const handleRemoveData = () => {
+    setReceiverNumber("");
+    setPersonName("");
+    setMessage("");
   };
 
   const handleSubmit = () => {
@@ -231,6 +239,13 @@ export default function Outbox() {
       });
   };
 
+  const handleCheckbox = (event) => {
+    setIsNumberKecamatan(event.target.checked);
+
+    handleRemoveData()
+  };
+  
+
   return (
     <div className="flex flex-row h-full w-full relative">
       {isOpenModalEdit && (
@@ -272,10 +287,21 @@ export default function Outbox() {
                 <div className="pt-4 w-full">
                   <MultipleSelectChip
                     data={listNumber}
+                    personName={personName ? personName : []}
+                    setPersonName={setPersonName}
                     setValue={setReceiverNumber}
+                    isNumberKecamatan={isNumberKecamatan}
                   />
                 </div>
-                <h1 className="text-xl pt-2 xl:pt-6">Pesan :</h1>
+
+                <div className="flex flex-row justify-end">
+                  <Checkbox
+                    checked={isNumberKecamatan}
+                    onChange={handleCheckbox}
+                  />
+                  <h1 className="text-gray-400 pt-2">Berdasarkan Kecamatan</h1>
+                </div>
+                <h1 className="text-xl pt-2 xl:pt-4">Pesan :</h1>
                 <div className="pt-2 xl:pt-5 w-full">
                   <textarea
                     className="flex flex-col w-full items-start py-5 justify-start bg-gray-100 px-4 rounded-xl text-md h-16"
@@ -382,13 +408,11 @@ export default function Outbox() {
               </div>
 
               <div
-                  className="flex flex-colbg-gray-100 ml-2 cursor-pointer"
-                  onClick={handleRefresh}
-                >
-                  <MdRefresh size={35} className="text-gray-500" />
-                </div>
-
-
+                className="flex flex-colbg-gray-100 ml-2 cursor-pointer"
+                onClick={handleRefresh}
+              >
+                <MdRefresh size={35} className="text-gray-500" />
+              </div>
             </div>
 
             <div className="flex flex-col w-full pt-6">

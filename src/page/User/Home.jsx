@@ -116,7 +116,7 @@ export default function Home() {
         }
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -161,7 +161,7 @@ export default function Home() {
               <h1 className="text-2xl font-semibold text-primary">
                 Grafik Perolehan Suara
               </h1>
-              <h1 className="text-3xl font-semibold">Kabupaten Aceh Besar</h1>
+              <h1 className="text-3xl font-semibold">Kota Banda Aceh</h1>
             </div>
 
             <div className="hidden md:flex bg-gray-100 h-full p-4 items-center rounded-2xl">

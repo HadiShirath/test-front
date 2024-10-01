@@ -116,7 +116,7 @@ export default function Saksi2() {
         setLoadingImage(false);
       });
 
-    fetch(`${apiUrl}/kecamatan`, {
+    fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

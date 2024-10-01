@@ -18,6 +18,7 @@ import TableTPSAdmin from "./page/Admin/TableTPS"
 import PhotoAdmin from "./page/Admin/Photo"
 import InboxAdmin from "./page/Admin/Inbox"
 import OutboxAdmin from "./page/Admin/Outbox"
+import ProfileAdmin from "./page/Admin/Profile"
 import Login from "./page/Login";
 import Saksi from "./page/Saksi/Home";
 import Saksi2 from "./page/Saksi2/Home";
@@ -63,6 +64,7 @@ function App() {
           <Route exact path="/admin/dashboard/:kecamatan/:kelurahan/:tps/photo" element={<PhotoAdmin />} />
           <Route exact path="/admin/inbox" element={<InboxAdmin />} />
           <Route exact path="/admin/outbox" element={<OutboxAdmin />} />
+          <Route exact path="/admin/profile" element={<ProfileAdmin />} />
           <Route exact path="/admin/saksi" element={<SaksiAdmin />} />
           <Route exact path="/admin/tps" element={<TPSPageAdmin />} />
           <Route exact path="/admin/table" element={<TableKecamatanAdmin />} />

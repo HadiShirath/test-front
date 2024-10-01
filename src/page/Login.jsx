@@ -8,14 +8,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Cookies from "js-cookie";
 import { parseToken } from "../utils/parseToken";
 
-
 export default function Login() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [isHidePassword, setIsHidePassword] = useState(true);
   const [loading, setLoading] = useState("");
   const navigate = useNavigate();
-  
+
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -29,8 +28,8 @@ export default function Login() {
         navigate(`/saksi`);
       } else if (data.role === "user") {
         navigate(`/user`);
-      } else if(data.role === "admin") {
-        navigate(`/admin/dashboard`)
+      } else if (data.role === "admin") {
+        navigate(`/admin/dashboard`);
       }
     }
   }, [navigate]);
@@ -42,7 +41,8 @@ export default function Login() {
     setPassword(event.target.value);
   };
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault();
     if (userName && password) {
       setLoading(true);
 
@@ -66,21 +66,23 @@ export default function Login() {
                 const data = parseToken(token);
                 if (data.role === "saksi_v2") {
                   navigate("/saksi/v2");
-                } 
-                else if (data.role === "saksi") {
+                } else if (data.role === "saksi") {
                   navigate("/saksi");
                 } else if (data.role === "user") {
                   navigate("/user");
-                } else if(data.role === "admin"){
-                  navigate("/admin/dashboard")
+                } else if (data.role === "admin") {
+                  navigate("/admin/dashboard");
                 }
               }
-              
             });
         } catch (error) {
           if (error.response) {
             // The request was made and the server responded with a status code
-            if (error.response.status === 400 || error.response.status === 401 || error.response.status === 404) {
+            if (
+              error.response.status === 400 ||
+              error.response.status === 401 ||
+              error.response.status === 404
+            ) {
               Swal.fire({
                 title: "Perhatian",
                 text: "Username / Password tidak valid",
@@ -88,7 +90,7 @@ export default function Login() {
                 showConfirmButton: false,
                 timer: 2000,
               });
-            } 
+            }
           } else if (error.request) {
             // The request was made but no response was received
             Swal.fire({
@@ -127,24 +129,27 @@ export default function Login() {
     <div className="flex flex-col w-full h-full justify-between ">
       <div className="flex flex-col lg:flex-row w-full h-full">
         <div className="flex flex-col w-full px-6 lg:px-14 pt-12 justify-between">
-          <h1 className="text-2xl md:text-4xl">KamarHitung.id</h1>
+          <div className="flex flex-row w-full justify-center pb-4">
+            <img
+              src="/images/kamar-hitung.png"
+              alt="kamar-hitung"
+              className="h-10 pr-4"
+            />
+            <h1 className="text-2xl md:text-4xl">Kamarhitung</h1>
+          </div>
 
-          <div className="text-2xl md:text-5xl font-semibold">
-            {/* <h1>Real Quick Count Pemilihan</h1>
-            <h1>Bupati & Wakil Bupati</h1>
-            <h1>Kabupaten Aceh Besar</h1> */}
-            <h1>Lorem ipsum dolor sit amet</h1>
+          <div className="flex flex-col items-center text-2xl md:text-5xl font-semibold">
+            <h1>Real Quick Count Pemilihan</h1>
+            <h1>Walikota & Wakil Walikota</h1>
+            <h1>Kota Banda Aceh</h1>
+            {/* <h1>Lorem ipsum dolor sit amet</h1>
             <h1>consectetur adipiscing elit</h1>
-            <h2>sed do eiusmod tempor</h2>
+            <h2>sed do eiusmod tempor</h2> */}
           </div>
 
           <div className="xl:flex hidden pt-20">
             <img src="/images/kotaksuara.jpg" alt="" />
           </div>
-
-          {/* <div>
-            <div className="hidden lg:flex flex-col w-full h-[300px] px-4"></div>
-          </div> */}
         </div>
         <div className="flex flex-col w-full h-full justify-center ">
           <div className="flex flex-col bg-white  shadow-lg px-8 xl:px-16 mx-8 py-12 lg:py-24 lg:mx-32 rounded-3xl">
@@ -154,43 +159,49 @@ export default function Login() {
             <h1 className="text-center text-gray-500 text-md md:text-lg pt-2 pb-10">
               Masukkan Username dan password
             </h1>
-            <h2 className="text-md md:text-xl text-gray-500 pb-4">Username</h2>
-            <input
-              className="h-12 rounded-xl px-4 bg-gray-50"
-              value={userName}
-              onChange={handleChangeUserName}
-            />
-            <h2 className="text-md md:text-xl text-gray-500 py-4">Password</h2>
-            <div className="flex flex-col w-full relative">
+            <form onSubmit={handleLogin}>
+              <h2 className="text-md md:text-xl text-gray-500 pb-4">
+                Username
+              </h2>
               <input
-                className="h-12 rounded-xl px-4 bg-gray-50 mb-8"
-                type={isHidePassword ? "password" : "text"}
-                value={password}
-                onChange={handleChangePassword}
+                className="h-12 w-full rounded-xl px-4 bg-gray-50"
+                value={userName}
+                onChange={handleChangeUserName}
               />
-              <div
-                className="absolute h-12 right-3 z-10 px-2 cursor-pointer"
-                onClick={() => setIsHidePassword(!isHidePassword)}
-              >
-                <HiEye className="h-12 text-gray-400 " size={20} />
+              <h2 className="text-md md:text-xl text-gray-500 py-4">
+                Password
+              </h2>
+              <div className="flex flex-col w-full relative">
+                <input
+                  className="h-12 rounded-xl px-4 bg-gray-50 mb-8"
+                  type={isHidePassword ? "password" : "text"}
+                  value={password}
+                  onChange={handleChangePassword}
+                />
+                <div
+                  className="absolute h-12 right-3 z-10 px-2 cursor-pointer"
+                  onClick={() => setIsHidePassword(!isHidePassword)}
+                >
+                  <HiEye className="h-12 text-gray-400 " size={20} />
+                </div>
               </div>
-            </div>
 
-            {loading ? (
-              <div className="w-full flex flex-row justify-center  bg-gray-300 py-4 items-center rounded-xl">
-                <CircularProgress sx={{ color: "#ffffff" }} size={25} />
-                <h1 className="text-white text-xl font-semibold pl-2">
-                  Loading
-                </h1>
-              </div>
-            ) : (
-              <div
-                className="w-full flex flex-col  bg-primary py-4 items-center rounded-xl cursor-pointer"
-                onClick={handleLogin}
-              >
-                <h1 className="text-white text-xl font-semibold">Masuk</h1>
-              </div>
-            )}
+              {loading ? (
+                <div className="w-full flex flex-row justify-center  bg-gray-300 py-4 items-center rounded-xl">
+                  <CircularProgress sx={{ color: "#ffffff" }} size={25} />
+                  <h1 className="text-white text-xl font-semibold pl-2">
+                    Loading
+                  </h1>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full flex flex-col  bg-primary py-4 items-center rounded-xl cursor-pointer"
+                >
+                  <h1 className="text-white text-xl font-semibold">Masuk</h1>
+                </button>
+              )}
+            </form>
           </div>
         </div>
       </div>
