@@ -231,8 +231,6 @@ export default function Beranda() {
     }
   };
 
-  console.log("Tes");
-
   return (
     <div className="flex flex-row h-full w-full">
       <div className="flex flex-col bg-primary w-full absolute -z-20 h-64 xl:h-52" />

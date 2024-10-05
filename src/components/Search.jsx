@@ -12,8 +12,8 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
   const [searchBox, setSearchBox] = useState(false);
   const [valueKecamatan, setValueKecamatan] = useState("");
   const [valueKelurahan, setValueKelurahan] = useState("");
-  const [loading, setLoading] = useState(false);
   const [valueTPS, setValueTPS] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [listDataKecamatan, setListDataKecamatan] = useState([]);
   const [listDataKelurahan, setListDataKelurahan] = useState([]);
@@ -22,9 +22,7 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = Cookies.get("access_token");
 
-  useEffect(() => {    
-    
-
+  useEffect(() => {
     fetch(`${apiUrl}/kecamatan/`, {
       method: "GET",
       headers: {
@@ -35,8 +33,6 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
       .then((data) => {
         setListDataKecamatan(data.payload);
       });
-
-
 
     if (kelurahan) {
       fetch(`${apiUrl}/tps/${kelurahan}`, {
@@ -67,7 +63,6 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
         });
     }
   }, [kecamatan, kelurahan, tps, apiUrl, token]);
-
 
   const styleSelect = {
     "& .MuiInputBase-root": {
@@ -223,17 +218,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                 <MenuItem value="" disabled>
                   Pilih Kecamatan
                 </MenuItem>
-                {listDataKecamatan && listDataKecamatan.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.kecamatan_name}
-                  </MenuItem>
-                ))}
+                {listDataKecamatan &&
+                  listDataKecamatan.map((option, key) => (
+                    <MenuItem
+                      key={key}
+                      value={option.code}
+                      sx={{
+                        fontFamily: "sans-serif",
+                      }}
+                    >
+                      {option.kecamatan_name}
+                    </MenuItem>
+                  ))}
               </TextField>
             </FormControl>
           </div>
@@ -261,17 +257,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                 <MenuItem value="" disabled>
                   Pilih Kelurahan
                 </MenuItem>
-                {listDataKelurahan && listDataKelurahan.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.kelurahan_name}
-                  </MenuItem>
-                ))}
+                {listDataKelurahan &&
+                  listDataKelurahan.map((option, key) => (
+                    <MenuItem
+                      key={key}
+                      value={option.code}
+                      sx={{
+                        fontFamily: "sans-serif",
+                      }}
+                    >
+                      {option.kelurahan_name}
+                    </MenuItem>
+                  ))}
               </TextField>
             </FormControl>
           </div>
@@ -299,17 +296,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                 <MenuItem value="" disabled>
                   Pilih TPS
                 </MenuItem>
-                {listDataTPS && listDataTPS.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.tps_name}
-                  </MenuItem>
-                ))}
+                {listDataTPS &&
+                  listDataTPS.map((option, key) => (
+                    <MenuItem
+                      key={key}
+                      value={option.code}
+                      sx={{
+                        fontFamily: "sans-serif",
+                      }}
+                    >
+                      {option.tps_name}
+                    </MenuItem>
+                  ))}
               </TextField>
             </FormControl>
           </div>
@@ -367,17 +365,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                   <MenuItem value="" disabled>
                     Pilih Kecamatan
                   </MenuItem>
-                  {listDataKecamatan && listDataKecamatan.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.kecamatan_name}
-                  </MenuItem>
-                ))}
+                  {listDataKecamatan &&
+                    listDataKecamatan.map((option, key) => (
+                      <MenuItem
+                        key={key}
+                        value={option.code}
+                        sx={{
+                          fontFamily: "sans-serif",
+                        }}
+                      >
+                        {option.kecamatan_name}
+                      </MenuItem>
+                    ))}
                 </TextField>
               </FormControl>
             </div>
@@ -405,17 +404,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                   <MenuItem value="" disabled>
                     Pilih Kelurahan
                   </MenuItem>
-                  {listDataKelurahan && listDataKelurahan.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.kelurahan_name}
-                  </MenuItem>
-                ))}
+                  {listDataKelurahan &&
+                    listDataKelurahan.map((option, key) => (
+                      <MenuItem
+                        key={key}
+                        value={option.code}
+                        sx={{
+                          fontFamily: "sans-serif",
+                        }}
+                      >
+                        {option.kelurahan_name}
+                      </MenuItem>
+                    ))}
                 </TextField>
               </FormControl>
             </div>
@@ -443,17 +443,18 @@ export default function Search({ kecamatan, kelurahan, tps, admin }) {
                   <MenuItem value="" disabled>
                     Pilih TPS
                   </MenuItem>
-                  {listDataTPS && listDataTPS.map((option, key) => (
-                  <MenuItem
-                    key={key}
-                    value={option.code}
-                    sx={{
-                      fontFamily: "sans-serif",
-                    }}
-                  >
-                    {option.tps_name}
-                  </MenuItem>
-                ))}
+                  {listDataTPS &&
+                    listDataTPS.map((option, key) => (
+                      <MenuItem
+                        key={key}
+                        value={option.code}
+                        sx={{
+                          fontFamily: "sans-serif",
+                        }}
+                      >
+                        {option.tps_name}
+                      </MenuItem>
+                    ))}
                 </TextField>
               </FormControl>
             </div>

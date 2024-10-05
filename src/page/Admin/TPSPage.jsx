@@ -145,7 +145,12 @@ export default function TPS() {
   };
 
   const handleChangeSuaraTidakSah = (event) => {
-    setSuaraTidakSah(parseInt(event.target.value, 10));
+    var newValue = parseInt(event.target.value, 10);
+    if (isNaN(newValue)) {
+      newValue = 0;
+    }
+    setSuaraTidakSah(newValue);
+
   };
 
   const handleSubmit = () => {
@@ -312,7 +317,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={paslon1}
                           onChange={handleChangePaslon1}
                         />
@@ -327,7 +331,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={paslon2}
                           onChange={handleChangePaslon2}
                         />
@@ -345,7 +348,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={paslon3}
                           onChange={handleChangePaslon3}
                         />
@@ -360,7 +362,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={paslon4}
                           onChange={handleChangePaslon4}
                         />
@@ -378,7 +379,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={suaraSah}
                           disabled
                         />
@@ -393,7 +393,6 @@ export default function TPS() {
                       <div className="flex flex-col w-full ">
                         <input
                           className="px-4 h-12 w-full text-gray-600  rounded-xl bg-gray-100"
-                          type="number"
                           value={suaraTidakSah}
                           onChange={handleChangeSuaraTidakSah}
                         />

@@ -151,10 +151,10 @@ export default function HeaderAdmin({
                   variants={slideInFromBottom(0.5)}
                   className="pt-2 pb-2 flex flex-col w-full px-10 items-start"
                 >
-                  <a href="/admin/saksi">
+                  <a href="/admin/user">
                     <div className="flex flex-row items-center">
                       <FaUsers size={20} className="text-violet-500" />
-                      <h1 className="pl-2">Saksi</h1>
+                      <h1 className="pl-2">User</h1>
                     </div>
                   </a>
                 </motion.div>

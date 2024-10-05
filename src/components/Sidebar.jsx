@@ -28,8 +28,8 @@ export default function Sidebar({ setExpanded, expanded }) {
         />
         <SidebarItem
           icon={<FaUsers size={18} className="text-violet-500" />}
-          text="Saksi"
-          path="/admin/saksi"
+          text="User"
+          path="/admin/user"
         />
         <hr className="my-3" />
         <SidebarItem
@@ -85,25 +85,7 @@ export function SidebarContainer({ children, expanded }) {
           <ul className="flex-1 px-3">{children}</ul>
         </SidebarContext.Provider>
 
-        {/* <div className="border-t flex p-3">
-          <img
-            src="https://ui-avatars.com/api/?background=c7d2fe&color=3730a3&bold=true"
-            alt=""
-            className="w-10 h-10 rounded-md"
-          />
-          <div
-            className={`
-              flex justify-between items-center
-              overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "w-0"}
-          `}
-          >
-            <div className="leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600">johndoe@gmail.com</span>
-            </div>
-            <MoreVertical size={20} />
-          </div>
-        </div> */}
+
       </nav>
     </aside>
   );
@@ -119,8 +101,8 @@ export function SidebarItem({ icon, text, path, alert }) {
   const handleClick = () => {
     if (text === "Dashboard") {
       navigate("/admin/dashboard");
-    } else if (text === "Saksi") {
-      navigate("/admin/saksi");
+    } else if (text === "User") {
+      navigate("/admin/user");
     } else if (text === "Pesan Masuk") {
       navigate("/admin/inbox");
     } else if (text === "Pesan Keluar") {

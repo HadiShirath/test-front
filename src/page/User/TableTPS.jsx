@@ -75,7 +75,7 @@ export default function Table() {
       }, 2000);
     }
 
-    fetch(`${apiUrl}/kelurahan/${kelurahan}`, {
+    fetch(`${apiUrl}/kelurahan/${kelurahan}/detail`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

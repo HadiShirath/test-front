@@ -223,18 +223,12 @@ export default function Kecamatan() {
 
         <div className="hidden md:flex flex-row w-full items-center justify-center pt-8 gap-2 px-4">
           <div
-            className="bg-primary py-4 px-8 rounded-xl cursor-pointer"
+            className="bg-primary  py-4 px-8 rounded-xl cursor-pointer"
             onClick={handleToPageTable}
           >
             <h1 className="text-white text-lg">Tampilkan Tabel Suara</h1>
           </div>
-          {/* <div
-              className="hidden md:flex flex-row bg-primary py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
-              onClick={handlePrint}
-            >
-              <MdLocalPrintshop size={24} className="text-white" />
-              <h1 className="text-white text-lg">Cetak</h1>
-            </div> */}
+      
           {tps && !pagePhoto && (
             <div
               className="hidden md:flex flex-row border-primary border-[3px] py-4 px-8 gap-2 items-center rounded-xl cursor-pointer"
@@ -248,7 +242,7 @@ export default function Kecamatan() {
       </div>
 
       <div className="md:hidden flex flex-col w-full">
-        <div className="flex-row mt-4  px-16 items-center">
+        <div className="flex-row mt-4 px-16 items-center">
           <div
             className="bg-primary py-3 flex flex-row justify-center rounded-xl gap-2"
             onClick={handleToPageTable}

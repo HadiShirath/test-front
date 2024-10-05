@@ -91,7 +91,7 @@ export default function TableTPS() {
         }
       });
 
-    fetch(`${apiUrl}/tps/voter/all`, {
+      fetch(`${apiUrl}/kelurahan/voter/${kelurahan}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

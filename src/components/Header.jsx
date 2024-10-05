@@ -125,27 +125,27 @@ export default function Header({ user }) {
         <div className="flex flex-row w-full  justify-between px-8 xl:px-12 ">
           <div className="hidden xl:flex flex-col justify-center w-full">
             <div className="flex flex-row items-center">
-              <div className="bg-red-500 bg-red rounded-2xl w-[70px] h-[70px]">
-                {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+              <div className="w-[80px] h-auto">
+                <img src="/images/kamar-hitung.png" alt="profile" />
               </div>
-              <div className="flex flex-col pl-2">
-                <h1 className="text-3xl font-bold text-red-400">Kamar</h1>
-                <h1 className="text-3xl font-bold font-sans text-red-400">
-                  Hitung.id
+              <div className="flex flex-col pl-4">
+                <h1 className="text-3xl font-bold text-black">Kamar</h1>
+                <h1 className="text-3xl font-bold font-sans text-black">
+                  Hitung
                 </h1>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col justify-center text-center  items-center w-full">
-            <div className="xl:hidden flex flex-row w-full justify-between pb-3">
+          <div className="flex flex-col justify-center text-center items-center w-full">
+            <div className="xl:hidden flex flex-row w-full justify-between pb-8">
               <div className="flex flex-row">
-                <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
-                  {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+                <div className="rounded-md w-[40px] h-auto">
+                  <img src="/images/kamar-hitung.png" alt="profile" />
                 </div>
                 <div className="flex flex-col pl-2">
-                  <h1 className="text-xl font-bold text-red-400">
-                    Kamar Hitung.id
+                  <h1 className="text-xl font-semibold text-gray-500">
+                    Kamar Hitung
                   </h1>
                 </div>
               </div>
@@ -169,13 +169,7 @@ export default function Header({ user }) {
             </h2>
             <h2 className="text-xl md:text-3xl ">Kota Banda Aceh</h2>
 
-            {/* <h2 className="text-xl md:text-4xl font-semibold">
-            Lorem ipsum dolor sit amet
-          </h2>
-          <h2 className="text-xl md:text-4xl font-semibold">
-            consectetur adipiscing elit
-          </h2>
-          <h2 className="text-xl md:text-3xl ">sed do eiusmod tempor</h2> */}
+          
           </div>
 
           <div className="hidden xl:flex flex-col w-full items-end justify-center">

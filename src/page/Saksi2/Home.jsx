@@ -319,6 +319,9 @@ export default function Saksi2() {
       paslon4 !== previousData.paslon4 ||
       suaraTidakSah === previousData.suaraTidakSah
     ) {
+      if (imageLocal) {
+        formData.append("photo", imageLocal);
+      }
       // upload data
       endpointUpload(formData, setLoading);
     } else {
@@ -464,7 +467,6 @@ export default function Saksi2() {
                       </h1>
                       <input
                         className="h-12 rounded-xl px-4 bg-gray-50 w-full"
-                        type="number"
                         value={input.value}
                         onChange={input.onChange}
                         readOnly={input.readOnly}

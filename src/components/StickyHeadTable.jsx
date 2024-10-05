@@ -295,7 +295,7 @@ export default function StickyHeadTable({
       if(current.sudah){
         acc.sudah += current.sudah
       }
-      if(current.sudah){
+      if(current.belum){
         acc.belum += current.belum
       }
       return acc;
@@ -425,7 +425,7 @@ export default function StickyHeadTable({
             {!tps && tableTitleTotal(total.total_tps)}
             {!admin && tableTitleTotal(total.sudah)}
             {!admin && tableTitleTotal(total.belum)}
-            {tableTitleTotal(total.pp)}
+            {tableTitleTotal(`${parseInt(total.pp / rows.length)}%`)}
             {admin && tableTitleTotal("-")}
           </TableRow>
         </TableBody>

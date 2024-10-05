@@ -10,7 +10,7 @@ import BerandaAdmin from "./page/Admin/Beranda"
 import KecamatanAdmin from "./page/Admin/Kecamatan"
 import KelurahanAdmin from "./page/Admin/Kelurahan"
 import TPSAdmin from "./page/Admin/TPS"
-import SaksiAdmin from "./page/Admin/Saksi"
+import UserAdmin from "./page/Admin/User"
 import TPSPageAdmin from "./page/Admin/TPSPage"
 import TableKecamatanAdmin from "./page/Admin/TableKecamatan"
 import TableKelurahanAdmin from "./page/Admin/TableKelurahan"
@@ -65,7 +65,7 @@ function App() {
           <Route exact path="/admin/inbox" element={<InboxAdmin />} />
           <Route exact path="/admin/outbox" element={<OutboxAdmin />} />
           <Route exact path="/admin/profile" element={<ProfileAdmin />} />
-          <Route exact path="/admin/saksi" element={<SaksiAdmin />} />
+          <Route exact path="/admin/user" element={<UserAdmin />} />
           <Route exact path="/admin/tps" element={<TPSPageAdmin />} />
           <Route exact path="/admin/table" element={<TableKecamatanAdmin />} />
           <Route exact path="/admin/table/:kecamatan" element={<TableKelurahanAdmin />} />

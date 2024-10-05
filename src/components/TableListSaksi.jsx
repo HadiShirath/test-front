@@ -18,7 +18,6 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
 import TableHead from "@mui/material/TableHead";
 import { useEffect } from "react";
-import Swal from "sweetalert2";
 import { useState } from "react";
 
 function TablePaginationActions(props) {
@@ -113,15 +112,6 @@ export default function TableListSaksi({
       .then((data) => {
         setDataTPS(data.payload);
       })
-      .catch((error) =>
-        Swal.fire({
-          title: "Terjadi Kesalahan",
-          text: error,
-          icon: "error",
-          showConfirmButton: false,
-          timer: 2000,
-        })
-      );
   }, [token, apiUrl]);
 
   function createData(
