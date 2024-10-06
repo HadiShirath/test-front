@@ -212,13 +212,13 @@ export default function HeaderAdmin({
       <div className="flex flex-row w-full justify-between py-6">
         <div className="flex flex-col w-full px-6">
           <div className="xl:hidden flex flex-row w-full justify-between pb-3">
-            <div className="flex flex-row">
-              <div className="bg-red-500 rounded-md w-[25px] h-[25px]">
-                {/* <img src="/images/kamar-hitung.png" alt="profile" /> */}
+            <div className="flex flex-row items-center">
+              <div className="w-[30px]">
+                <img src="/images/kamar-hitung.png" alt="profile" />
               </div>
               <div className="flex flex-col pl-2">
-                <h1 className="text-xl font-bold text-yellow-300">
-                  Kamar Hitung.id
+                <h1 className="text-xl font-semibold text-black">
+                  Kamar Hitung
                 </h1>
               </div>
             </div>
@@ -250,7 +250,7 @@ export default function HeaderAdmin({
           </div>
 
           <h1 className="text-3xl text-white font-semibold pt-2">{title}</h1>
-          <h1 className="text-xl text-white">
+          <h1 className="text-xl text-white max-w-72">
             Real Quick Count Pemilihan Bupati & Wakil Bupati
           </h1>
           <h1 className="text-xl text-white ">Kota Banda Aceh</h1>
