@@ -46,6 +46,7 @@ export default function User() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [listDataKecamatan, setListDataKecamatan] = useState("");
 
   const componentRef = useRef();
   const navigate = useNavigate();
@@ -77,6 +78,17 @@ export default function User() {
         navigate("/login");
       }, 2000);
     }
+
+    fetch(`${apiUrl}/kecamatan/`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setListDataKecamatan(data.payload);
+      });
 
     fetch(`${apiUrl}/kecamatan/voters`, {
       method: "GET",
@@ -742,7 +754,7 @@ export default function User() {
               </div>
 
               <div className="hidden md:flex flex-col">
-                {dataUser.length >= 0 && dataUser.length <= 2 ? (
+                {dataUser.length <= listDataKecamatan.length  ? (
                   <div
                     className="flex flex-row border-[2px] border-orange-400 px-8 py-3 rounded-xl cursor-pointer"
                     onClick={() =>
@@ -758,7 +770,7 @@ export default function User() {
                     onClick={() =>
                       AlertWarning({
                         title: "Data User Penuh",
-                        text: "Anda hanya dapat memiliki maksimal 3 akun User",
+                        text: `Anda hanya dapat memiliki maksimal ${listDataKecamatan.length + 1} akun User`,
                       })
                     }
                   >
@@ -780,7 +792,7 @@ export default function User() {
             </div>
 
             <div className="md:hidden flex flex-col px-6 pt-6">
-              {dataUser.length >= 0 && dataUser.length <= 2 ? (
+              {dataUser.length <= listDataKecamatan.length ? (
                 <div
                   className="flex flex-row w-full justify-center border-[2px] border-orange-400 px-8 py-3 rounded-xl cursor-pointer"
                   onClick={() =>
@@ -796,7 +808,7 @@ export default function User() {
                   onClick={() =>
                     AlertWarning({
                       title: "Data User Penuh",
-                      text: "Anda hanya dapat memiliki maksimal 3 akun User",
+                      text: `Anda hanya dapat memiliki maksimal ${listDataKecamatan.length + 1} akun User`,
                     })
                   }
                 >
